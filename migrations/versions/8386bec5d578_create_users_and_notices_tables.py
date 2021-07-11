@@ -1,8 +1,8 @@
-"""create users and notices table
+"""create users and notices tables
 
-Revision ID: 93a1d0bb18c8
+Revision ID: 8386bec5d578
 Revises: 
-Create Date: 2021-07-10 17:12:59.708563
+Create Date: 2021-07-11 18:36:51.029109
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '93a1d0bb18c8'
+revision = '8386bec5d578'
 down_revision = None
 branch_labels = None
 depends_on = None
