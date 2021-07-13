@@ -119,3 +119,7 @@ def cli_notices(app: Flask):
             session.commit()
 
     app.cli.add_command(cli_notices_group)
+
+def init_app(app:Flask):
+    cli_users(app)
+    cli_notices(app)
