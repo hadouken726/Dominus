@@ -5,6 +5,8 @@ from datetime import datetime
 
 
 class NoticesModel(db.Model):
+    __tablename__ = "notices"
+
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     desc = Column(String, nullable=False)

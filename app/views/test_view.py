@@ -1,10 +1,6 @@
-from flask import Blueprint
+from flask_restful import Resource
 
 
-
-bp = Blueprint('bp_test', __name__)
-
-
-@bp.get('/test')
-def test():
-    return 'Hello world!', 200
+class Test(Resource):
+    def get(self):
+        return 'Hello world!', 200
