@@ -9,4 +9,3 @@ class NoticesModel(db.Model):
     title = Column(String, nullable=False)
     desc = Column(String, nullable=False)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-    
