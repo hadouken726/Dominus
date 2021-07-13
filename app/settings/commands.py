@@ -2,15 +2,18 @@ import click
 from flask import Flask
 from flask.cli import AppGroup
 from faker import Faker
+from faker.providers.ssn import pt_BR
+from faker.providers import ssn
 
 from click import argument, echo
 
 from app.models.notices_model import NoticesModel
 from app.models.users_model import UsersModel
 
-fake = Faker()
+fake = Faker("pt_BR")
+fake.add_provider(ssn)
 
-# TODO Create commands to DELETE, POPULATE and CREATE ADMIN tables: NoticesModel and UsersModel
+
 def cli_users(app: Flask):
     cli_users_group = AppGroup("users")
 
@@ -22,7 +25,7 @@ def cli_users(app: Flask):
         session.query(UsersModel).delete()
         session.commit()
 
-        echo("UsersModel table was deleted!")
+        echo("UsersModel table data was deleted!")
 
     # ** Populate with amount
     @cli_users_group.command("populate")
@@ -33,7 +36,7 @@ def cli_users(app: Flask):
         for _ in range(int(amount)):
             user = {
                 "cpf": fake.cpf(),
-                "phone": fake.cellphone_number(),
+                "phone": fake.msisdn(),
                 "name": fake.name(),
                 "password": fake.password(
                     length=10,
@@ -57,36 +60,34 @@ def cli_users(app: Flask):
     def cli_users_create_admin():
         session = app.db.session
 
-        for _ in range(int(amount)):
-            user = {
-                "cpf": fake.cpf(),
-                "phone": fake.cellphone_number(),
-                "name": fake.name(),
-                "password": fake.password(
-                    length=10,
-                    special_chars=True,
-                    digits=True,
-                    upper_case=True,
-                    lower_case=True,
-                ),
-                "is_admin": True,
-                "home_number": fake.pyint(min_value=201, max_value=208, step=1),
-            }
+        user = {
+            "cpf": fake.cpf(),
+            "phone": fake.cellphone_number(),
+            "name": fake.name(),
+            "password": fake.password(
+                length=10,
+                special_chars=True,
+                digits=True,
+                upper_case=True,
+                lower_case=True,
+            ),
+            "is_admin": True,
+            "home_number": fake.pyint(min_value=201, max_value=208, step=1),
+        }
 
-            user = UsersModel(**user)
+        user = UsersModel(**user)
 
-            session.add(user)
-            session.commit()
+        session.add(user)
+        session.commit()
 
-            click.echo("Admin was created!")
-            click.echo(f"Admin --> {user.name}")
-            click.echo(f"CPF --> {user.cpf}")
-            click.echo(f"Password --> {user.password}")
+        click.echo("Admin was created!")
+        click.echo(f"Admin --> {user.name}")
+        click.echo(f"CPF --> {user.cpf}")
+        click.echo(f"Password --> {user.password}")
 
     app.cli.add_command(cli_users_group)
 
 
-# TODO Create commands to DELETE and POPULATE Notifications on table NoticesModel
 def cli_notices(app: Flask):
     cli_notices_group = AppGroup("notices")
 
@@ -97,7 +98,7 @@ def cli_notices(app: Flask):
         session.query(NoticesModel).delete()
         session.commit()
 
-        echo("NoticesModel table was deleted!")
+        echo("NoticesModel table data was deleted!")
 
     @cli_notices_group.command("populate")
     @click.argument("amount")
