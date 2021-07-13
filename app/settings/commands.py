@@ -22,7 +22,7 @@ def cli_users(app: Flask):
         session.query(UsersModel).delete()
         session.commit()
 
-        echo("Delete UsersModel table was completed!")
+        echo("UsersModel table was deleted!")
 
     # ** Populate with amount
     @cli_users_group.command("populate")
@@ -88,11 +88,34 @@ def cli_users(app: Flask):
 
 # TODO Create commands to DELETE and POPULATE Notifications on table NoticesModel
 def cli_notices(app: Flask):
-    cli_users_group = AppGroup("notices")
+    cli_notices_group = AppGroup("notices")
 
-    @cli_users_group.command("del")
+    @cli_notices_group.command("del")
     def cli_notices_delete():
         session = app.db.session
 
         session.query(NoticesModel).delete()
         session.commit()
+
+        echo("NoticesModel table was deleted!")
+
+    @cli_notices_group.command("populate")
+    @click.argument("amount")
+    def cli_notices_populate(amount: str):
+        session = app.db.session
+
+        for _ in range(int(amount)):
+            notice = {
+                "title": fake.sentence(
+                    nb_words=6, variable_nb_words=True, ext_word_list=None
+                ),
+                "desc": fake.paragraphs(nb=5, ext_word_list=None),
+                "updated_at": fake.date_time(tzinfo=None, end_datetime=None),
+            }
+
+            notice = NoticesModel(**notice)
+
+            session.add(user)
+            session.commit()
+
+    app.cli.add_command(cli_notices_group)
