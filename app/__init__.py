@@ -1,7 +1,7 @@
 from flask import Flask
 from app import settings
-from app.settings import database, migration, views
-
+from app.settings import database, migration, commands
+from app import views
 
 def create_app():
     app = Flask(__name__)
@@ -9,5 +9,5 @@ def create_app():
     database.init_app(app)
     migration.init_app(app)
     views.init_app(app)
-
+    commands.init_app(app)
     return app
