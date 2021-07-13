@@ -115,11 +115,12 @@ def cli_notices(app: Flask):
 
             notice = NoticesModel(**notice)
 
-            session.add(user)
+            session.add(notice)
             session.commit()
 
     app.cli.add_command(cli_notices_group)
 
-def init_app(app:Flask):
+
+def init_app(app: Flask):
     cli_users(app)
     cli_notices(app)
