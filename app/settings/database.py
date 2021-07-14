@@ -13,6 +13,7 @@ def init_app(app: Flask):
     env.read_env()
     app.config['SQLALCHEMY_DATABASE_URI'] = env('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = env('SECRET_KEY')
     db.init_app(app)
     app.db = db
     from app.models.users_model import UsersModel
