@@ -16,6 +16,7 @@ class UsersModel(db.Model):
     name = Column(String(100), nullable=False)
     password = Column(String, nullable=True)
     is_admin = Column(Boolean, default=False)
+    is_home_in_possession = Column(Boolean, nullable=False, default=False)
 
     @property
     def password_hash(self):
