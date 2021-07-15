@@ -14,7 +14,6 @@ class UsersModel(db.Model):
     name = Column(String, nullable=False)
     password = Column(String, nullable=True)
     is_admin = Column(Boolean, default=False)
-    # TODO Create new Column = Bloco da residencia
     home_number = Column(Integer, nullable=False)
 
     @property

@@ -8,3 +8,4 @@ def init_app(app: Flask):
     api.add_resource(Notices, "/notices", endpoint="/notices", methods=["GET"])
     api.add_resource(Notices, "/notices/<notice_id>", endpoint="/notices/<int:notice_id>", methods=["GET"])
     api.add_resource(Test, "/test", endpoint="/test", methods=["GET"])
+
