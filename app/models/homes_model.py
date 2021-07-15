@@ -1,5 +1,5 @@
 from marshmallow_sqlalchemy.schema import auto_field
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import backref, relation, relationship
 from sqlalchemy.sql.functions import mode
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import DateTime, Float, Integer, String
@@ -17,3 +17,4 @@ class HomesModel(db.Model):
     area = Column(Float)
     block = Column(String(3))
     residents = relationship('UsersModel', backref=backref('home'))
+    holder = relationship('UsersModel', backref=backref('home_in_possession'), uselist=False)
