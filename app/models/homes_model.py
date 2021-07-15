@@ -12,9 +12,8 @@ class HomesModel(db.Model):
     __tablename__ = "homes"
 
     id = Column(Integer, primary_key=True)
-    holder_id = Column(Integer, ForeignKey('users.id'))
     number = Column(Integer, nullable=False, unique=True)
     area = Column(Float)
     block = Column(String(3))
-    residents = relationship('UsersModel', backref=backref('home'))
     holder = relationship('UsersModel', backref=backref('home_in_possession'), uselist=False)
+    residents = relationship('UsersModel', backref=backref('home'))
