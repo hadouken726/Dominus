@@ -12,7 +12,8 @@ class NoticesModel(db.Model):
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     desc = Column(String, nullable=False)
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_at = Column(String, default=datetime.utcnow())
+    updated_at = Column(DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
 
 class NoticeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
