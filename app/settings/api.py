@@ -1,12 +1,14 @@
 from flask import Flask
+from flask_jwt_extended import JWTManager
 from flask_restful import Api
 
 
 def init_app(app: Flask):
     api = Api(app)
-    
+    JWTManager(app)
+
     from app.views import Notices
-    api.add_resource(Notices, "/notices", endpoint="/notices", methods=["GET"])
+    api.add_resource(Notices, "/notices", endpoint="/notices", methods=["GET", "POST"])
     api.add_resource(Notices, "/notices/<notice_id>", endpoint="/notices/<int:notice_id>", methods=["GET"])
 
 
@@ -19,4 +21,4 @@ def init_app(app: Flask):
 
 
     from app.views import Users
-    api.add_resource(Users, "/users", endpoint="signup", methods=["POST"])
+    api.add_resource(Users, "/signup", endpoint="/signup", methods=["POST"])
