@@ -21,7 +21,7 @@ class Notices(Resource):
             return {"notices": notices_schema.dump(notices)}, HTTPStatus.OK
         else:
             try:
-                notice = NoticesModel().query.get(notice_id)
+                notice = NoticesModel().query.get_or_404(notice_id)
                 notice_schema = NoticeSchema()
                 return notice_schema.dump(notice), HTTPStatus.OK
             except e.DataError:
@@ -29,9 +29,6 @@ class Notices(Resource):
                 return {"message": "invalid number, just accept int with register ids",
                         "error": "dataError"}, HTTPStatus.BAD_REQUEST
 
-            except AttributeError:
-                return {"message": "invalid number, just accept int with register ids",
-                        "error": "attribute Error"}, HTTPStatus.BAD_REQUEST
 
     @jwt_required()
     def post(self):
@@ -56,7 +53,7 @@ class Notices(Resource):
     def delete(self, notice_id=None):
         is_admin = get_jwt_identity()["id"]
         if is_admin:
-            notice = NoticesModel().query.get(notice_id)
+            notice = NoticesModel().query.get_or_404(notice_id)
             db.session.delete(notice)
             db.session.commit()
             return {"message": f"notice {notice.id} has been deleted"}
