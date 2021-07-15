@@ -1,3 +1,4 @@
+from sqlalchemy.orm import backref, relationship
 from app.settings.database import db
 from sqlalchemy.schema import Column
 from sqlalchemy.sql.schema import ForeignKey
@@ -10,6 +11,5 @@ class PollsVotesModel(db.Model):
     id = Column(Integer, primary_key=True)
 
     owner_id = Column(Integer, ForeignKey("users.id"))
-    polls_id = Column(Integer, ForeignKey("polls.id"))
-
-    is_yes = Column(Boolean, nullable=False)
+    option_id = Column(Integer, ForeignKey('poll_options.id'))
+    owner = relationship('UsersModel', backref=backref('vote'), uselist=False)
