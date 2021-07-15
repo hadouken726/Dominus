@@ -12,8 +12,8 @@ class PollsModel(db.Model):
 
     start_at = Column(DateTime, default=datetime.utcnow())
     end_at = Column(DateTime, default=(datetime.utcnow() + timedelta(days=2)))
-    desc = Column(String, nullable=False)
-    title = Column(String, nullable=False)
+    desc = Column(String(1000), nullable=False)
+    title = Column(String(50), nullable=False)
 
     votes = relationship('PollsVotesModel', secondary='poll_options', backref=backref('poll'))
     options = relationship('PollOptionsModel', backref=backref('poll'))
