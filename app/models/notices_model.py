@@ -10,9 +10,9 @@ class NoticesModel(db.Model):
     __tablename__ = "notices"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String, nullable=False)
-    desc = Column(String, nullable=False)
-    created_at = Column(String, default=datetime.utcnow())
+    title = Column(String(50), nullable=False)
+    desc = Column(String(5000), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
 
 class NoticeSchema(ma.SQLAlchemyAutoSchema):
