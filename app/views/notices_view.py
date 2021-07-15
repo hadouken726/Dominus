@@ -18,7 +18,7 @@ class Notices(Resource):
         if notice_id is None:
             notices = NoticesModel().query.all()
             notices_schema = NoticeSchema(many=True)
-            return notices_schema.dump(notices), HTTPStatus.OK
+            return {"notices": notices_schema.dump(notices)}, HTTPStatus.OK
         else:
             try:
                 notice = NoticesModel().query.get(notice_id)
@@ -48,3 +48,36 @@ class Notices(Resource):
 
             except ValidationError as VE:
                 return VE.messages
+
+        if not is_admin:
+            return {"message": "user dont have admin permission to create a new notice"}, HTTPStatus.UNAUTHORIZED
+
+    @jwt_required()
+    def delete(self, notice_id=None):
+        is_admin = get_jwt_identity()["id"]
+        if is_admin:
+            notice = NoticesModel().query.get(notice_id)
+            db.session.delete(notice)
+            db.session.commit()
+            return {"message": f"notice {notice.id} has been deleted"}
+
+        if not is_admin:
+            return {"message": "user dont have admin permission to create a new notice"}, HTTPStatus.UNAUTHORIZED
+
+
+    @jwt_required()
+    def patch(self, notice_id=None):
+        try:
+            data = request.get_json()
+            notice = NoticesModel.query.get_or_404(notice_id)
+            for key, value in data.items():
+                setattr(notice, key, value)
+            notice_schema = NoticeSchema()
+            patch_notice = notice_schema.load(data, session=session)
+            db.session.add(patch_notice)
+            db.session.commit()
+
+            return notice_schema.dump(patch_notice)
+
+        except ValidationError as VE:
+            return VE.messages
