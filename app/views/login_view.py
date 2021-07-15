@@ -24,7 +24,8 @@ class Login(Resource):
 
         payload = {
             "id": user.id,
-            "name": user.name
+            "name": user.name,
+            "admin": user.is_admin
         }
 
         access_token = create_access_token(identity=payload)
