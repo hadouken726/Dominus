@@ -4,4 +4,11 @@ from flask import Flask, Blueprint
 
 
 def init_app(app: Flask):
-    bp_users
+
+    from app.views.login_view import Login
+    from app.views.notices_view import Notices
+    from app.views.test_view import Test
+    from app.views.users_view import Users
+
+from app.views.test_view import Test
+from app.views.users_view import Users
