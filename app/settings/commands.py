@@ -6,9 +6,11 @@ from faker.providers.ssn import pt_BR
 from faker.providers import ssn
 
 from click import argument, echo
+from datetime import datetime, timedelta
 
 from app.models.notices_model import NoticesModel
 from app.models.users_model import UsersModel
+from app.models.polls_model import PollsModel
 
 fake = Faker("pt_BR")
 fake.add_provider(ssn)
@@ -122,6 +124,43 @@ def cli_notices(app: Flask):
     app.cli.add_command(cli_notices_group)
 
 
+def cli_polls(app: Flask):
+    cli_polls_group = AppGroup("polls")
+
+    @cli_polls_group.command("populate")
+    @click.argument("amount")
+    def cli_polls_populate(amount: str):
+        session = app.db.session
+
+        for _ in range(int(amount)):
+            poll = {
+                "start_at": str(datetime.utcnow()),
+                "end_at": str(datetime.utcnow() + timedelta(days=2)),
+                "desc": fake.paragraph(
+                    nb_sentences=5, variable_nb_sentences=True, ext_word_list=None
+                ),
+            }
+
+            poll = PollsModel(**poll)
+
+            session.add(poll)
+            session.commit()
+
+        click.echo(f"The table PollsModel was populated with {amount} poll(s)!")
+
+    @cli_polls_group.command("del")
+    def cli_polls_delete():
+        session = app.db.session
+
+        session.query(PollsModel).delete()
+        session.commit()
+
+        echo("PollsModel table data was deleted!")
+
+    app.cli.add_command(cli_polls_group)
+
+
 def init_app(app: Flask):
     cli_users(app)
     cli_notices(app)
+    cli_polls(app)
