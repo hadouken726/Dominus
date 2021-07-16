@@ -1,6 +1,9 @@
-from flask import Flask
-from app.views.test_view import bp as bp_test
+from app.views.login_view import Login
+from app.views.notices_view import Notices
+from app.views.users_view import Users
 
 
-def init_app(app: Flask):
-    app.register_blueprint(bp_test)
+
+
+
+
