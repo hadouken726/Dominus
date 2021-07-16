@@ -4,6 +4,7 @@ from sqlalchemy.orm import query
 from app.models.users_model import UsersModel
 from flask_restful import Resource
 from flask_jwt_extended import create_access_token
+# from ipdb import set_trace
 
 class Login(Resource):
 
@@ -13,13 +14,14 @@ class Login(Resource):
     """
 
     def post(self):
-        user : UsersModel = UsersModel()
-        found_user : UsersModel = user.query.filter_by(cpf=user.cpf).first_or_404()
+        user_data = request.get_json()
+        user = UsersModel()
+        found_user = user.query.filter_by(cpf=user_data["cpf"]).first_or_404()
 
         if not found_user:
             return {"message": "user not found"}, HTTPStatus.NOT_FOUND
         
-        if not found_user.check_password(user.password):
+        if not found_user.check_password(user_data["password"]):
             return jsonify({"error": "wrong credentials"}), HTTPStatus.FORBIDDEN
 
         payload = {
