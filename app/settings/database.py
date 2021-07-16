@@ -18,4 +18,8 @@ def init_app(app: Flask):
     app.db = db
     from app.models.users_model import UsersModel
     from app.models.notices_model import NoticesModel
+    from app.models.homes_model import HomesModel
+    from app.models.polls_model import PollsModel
+    from app.models.poll_options_model import PollOptionsModel
+    from app.models.polls_votes_model import PollsVotesModel
     
