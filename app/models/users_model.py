@@ -1,3 +1,4 @@
+from ipdb.__main__ import set_trace
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import CHAR, Integer, String, Boolean
 from sqlalchemy.schema import Column
@@ -26,5 +27,7 @@ class UsersModel(db.Model):
     def password_hash(self, password_to_hash):
         self.password = generate_password_hash(password_to_hash)
 
-    def check_password(self, password_to_compare) -> Boolean:
-        return check_password_hash(self.password_hash, password_to_compare)
+    def check_password(self, password_to_compare):
+        return check_password_hash(self.password, password_to_compare)
+
+        
