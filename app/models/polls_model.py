@@ -1,8 +1,10 @@
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.sql.sqltypes import DateTime, Integer, String, Text
-from app.settings.database import db
+from app.settings.database import db, ma
 from sqlalchemy.schema import Column
 from datetime import datetime, timedelta
+
+from marshmallow_sqlalchemy.schema import auto_field
 
 
 class PollsModel(db.Model):
@@ -15,5 +17,20 @@ class PollsModel(db.Model):
     desc = Column(String(1000), nullable=False)
     title = Column(String(50), nullable=False)
 
-    votes = relationship('PollsVotesModel', secondary='poll_options', backref=backref('poll'))
-    options = relationship('PollOptionsModel', backref=backref('poll'), foreign_keys='PollOptionsModel.poll_id')
+    votes = relationship(
+        "PollsVotesModel", secondary="poll_options", backref=backref("poll")
+    )
+
+
+# class PollsSchema(ma.SQLAlchemyAutoSchema):
+#     class Meta:
+#         model = PollsModel
+#         load_instance = True
+#         ordered = True
+
+#     id = auto_field()
+#     started_at = auto_field()
+#     end_at = auto_field()
+#     desc = auto_field()
+#     title = auto_field()
+#     votes = auto_field()

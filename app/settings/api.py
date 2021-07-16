@@ -8,15 +8,34 @@ def init_app(app: Flask):
     JWTManager(app)
 
     from app.views import Notices
-    api.add_resource(Notices, "/notices", endpoint="/notices", methods=["GET", "POST"])
-    api.add_resource(Notices, "/notices/<notice_id>", endpoint="/notices/<notice_id>", methods=["GET", "DELETE", "PATCH"])
 
+    api.add_resource(Notices, "/notices", endpoint="/notices", methods=["GET", "POST"])
+    api.add_resource(
+        Notices,
+        "/notices/<notice_id>",
+        endpoint="/notices/<notice_id>",
+        methods=["GET", "DELETE", "PATCH"],
+    )
 
     from app.views import Login
+
     api.add_resource(Login, "/login", endpoint="/login", methods=["POST"])
 
-
     from app.views import Users
+
     api.add_resource(Users, "/signup", endpoint="/signup", methods=["POST"])
     api.add_resource(Users, "/users", endpoint="/users", methods=["GET"])
-    api.add_resource(Users, "/users/<user_id>", endpoint="/users/<user_id>", methods=["GET", "DELETE", "PATCH"])
+    api.add_resource(
+        Users,
+        "/users/<user_id>",
+        endpoint="/users/<user_id>",
+        methods=["GET", "DELETE", "PATCH"],
+    )
+
+    from app.views import Polls
+
+    api.add_resource(Polls, "/polls", endpoint="/poll", methods=["POST"])
+    api.add_resource(Polls, "/polls", endpoint="/polls", methods=["GET"])
+    api.add_resource(
+        Polls, "/polls/<poll_id>", endpoint="/polls/<poll_id>", methods=["GET"]
+    )
