@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from app.models.notices_model import NoticesModel
 from app.models.users_model import UsersModel
 from app.models.polls_model import PollsModel
+from app.models.poll_options_model import PollOptionsModel
 
 fake = Faker("pt_BR")
 fake.add_provider(ssn)
@@ -139,6 +140,9 @@ def cli_polls(app: Flask):
                 "desc": fake.paragraph(
                     nb_sentences=5, variable_nb_sentences=True, ext_word_list=None
                 ),
+                "title": fake.paragraph(
+                    nb_sentences=1, variable_nb_sentences=True, ext_word_list=None
+                ).title(),
             }
 
             poll = PollsModel(**poll)
@@ -160,7 +164,44 @@ def cli_polls(app: Flask):
     app.cli.add_command(cli_polls_group)
 
 
+def cli_poll_options(app: Flask):
+    cli_poll_options_group = AppGroup("poll_options")
+
+    @cli_poll_options_group.command("populate")
+    @click.argument("amount")
+    def cli_poll_options_populate(amount: str):
+        session = app.db.session
+
+        for _ in range(int(amount)):
+            count = 1
+            poll_option = {"name": f"Option {count}"}
+            #TODO [ ] poll_id = COMO PUXAR OS VALORES DA RELAÇÃO ENTRE AS TABELAS 
+
+            poll_option: PollOptionsModel = PollOptionsModel(**poll_option)
+
+            session.add(poll_option)
+            session.commit()
+
+            count += 1
+
+        click.echo(
+            f"The table PollOptionsModel was populated with {amount} poll(s) options!"
+        )
+
+    @cli_poll_options_group.command("del")
+    def cli_poll_options_delete():
+        session = app.db.session
+
+        session.query(PollOptionsModel).delete()
+        session.commit()
+
+        echo("PollOptionsModel table data was deleted!")
+
+    app.cli.add_command(cli_poll_options_group)
+
+
 def init_app(app: Flask):
     cli_users(app)
     cli_notices(app)
     cli_polls(app)
+    cli_poll_options(app)
