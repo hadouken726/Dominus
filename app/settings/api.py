@@ -17,6 +17,6 @@ def init_app(app: Flask):
 
 
     from app.views import Users
-    api.add_resource(Users, "/signup", endpoint="/users", methods=["POST"])
+    api.add_resource(Users, "/signup", endpoint="/signup", methods=["POST"])
     api.add_resource(Users, "/users", endpoint="/users", methods=["GET"])
     api.add_resource(Users, "/users/<user_id>", endpoint="/users/<user_id>", methods=["GET", "DELETE", "PATCH"])
