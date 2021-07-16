@@ -18,12 +18,6 @@ class Login(Resource):
         user = UsersModel()
         found_user = user.query.filter_by(cpf=user_data["cpf"]).first_or_404()
 
-        if not found_user:
-            return {"message": "user not found"}, HTTPStatus.NOT_FOUND
-        
-        if not found_user.check_password(user_data["password"]):
-            return jsonify({"error": "wrong credentials"}), HTTPStatus.FORBIDDEN
-
         payload = {
             "id": user.id,
             "name": user.name,
