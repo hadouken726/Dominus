@@ -3,7 +3,9 @@ from sqlalchemy.sql.sqltypes import DateTime, Integer, String, Text
 from app.settings.database import db, ma
 from sqlalchemy.schema import Column
 from datetime import datetime, timedelta
-from marshmallow_sqlalchemy import auto_field
+
+from marshmallow_sqlalchemy.schema import auto_field
+
 
 class PollsModel(db.Model):
     __tablename__ = "polls"
