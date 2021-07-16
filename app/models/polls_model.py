@@ -15,5 +15,7 @@ class PollsModel(db.Model):
     desc = Column(String(1000), nullable=False)
     title = Column(String(50), nullable=False)
 
-    votes = relationship('PollsVotesModel', secondary='poll_options', backref=backref('poll'))
+
+
+
     
