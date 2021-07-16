@@ -1,15 +1,11 @@
 from http import HTTPStatus
 from flask import Blueprint, Response, jsonify, request
-from flask_httpauth import HTTPBasicAuth
 from flask_restful import Resource
 
 from app.models.users_model import UsersModel
 from app.settings.database import db
 from app.services.users_service import UsersServices
 
-
-bp = Blueprint('bp_users_route', __name__)
-auth = HTTPBasicAuth()
 
 
 class Users(Resource):
