@@ -19,9 +19,9 @@ class Login(Resource):
         found_user = user.query.filter_by(cpf=user_data["cpf"]).first_or_404()
 
         payload = {
-            "id": user.id,
-            "name": user.name,
-            "admin": user.is_admin
+            "id": found_user.id,
+            "name": found_user.name,
+            "admin": found_user.is_admin
         }
 
         access_token = create_access_token(identity=payload)
