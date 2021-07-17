@@ -13,7 +13,8 @@ class PollsVotesModel(db.Model):
 
     owner_id = Column(Integer, ForeignKey("users.id"))
     option_id = Column(Integer, ForeignKey('poll_options.id'))
-    owner = relationship('UsersModel', backref=backref('vote'), uselist=False)
+    owner = relationship('UsersModel', backref=backref('votes'))
+    option = relationship('PollOptionsModel', backref=backref('votes'))
 
 class PollVoteSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
