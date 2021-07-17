@@ -12,7 +12,7 @@ class EventsCategoriesModel(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
 
-class EventSchema(ma.SQLAlchemyAutoSchema):
+class EventCategorySchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = EventsCategoriesModel
         load_instance = True

@@ -22,4 +22,6 @@ def init_app(app: Flask):
     from app.models.poll_options_model import PollOptionsModel
     from app.models.polls_votes_model import PollsVotesModel
     from app.models.polls_model import PollsModel
-    
+    from app.models.events_categories_model import EventsCategoriesModel
+    from app.models.events_invitations_model import EventsInvitationsModel
+    from app.models.events_model import EventsModel
