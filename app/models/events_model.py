@@ -13,7 +13,7 @@ class EventsModel(db.Model):
     
     id = Column(Integer, primary_key=True)
     host_id = Column(Integer, ForeignKey('users.id'))
-    category_id = Column(Integer, ForeignKey('event_categories'))
+    category_id = Column(Integer, ForeignKey('events_categories.id'))
     title = Column(String(50), nullable=False)
     desc = Column(String(5000), nullable=False)
     start_at = Column(DateTime, default=datetime.utcnow())

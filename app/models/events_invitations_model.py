@@ -12,7 +12,7 @@ class EventsInvitationsModel(db.Model):
     id = Column(Integer, primary_key=True)
     event_id = Column(Integer, ForeignKey('events.id'))
     guest_id = Column(Integer, ForeignKey('users.id'))
-    status = Column(Enum(['invited', 'accepted', 'rejected']), nullable=False)
+    status = Column(Enum('invited', 'accepted', 'rejected', name='status'), nullable=False)
 
 class EventInvitationSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
