@@ -1,7 +1,6 @@
 from flask import Flask
 from app import settings
 from app.settings import database, migration, commands, api
-from app import views
 
 
 def create_app() -> Flask:
