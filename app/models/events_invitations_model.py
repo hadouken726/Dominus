@@ -16,8 +16,10 @@ class EventsInvitationsModel(db.Model):
     status = Column(Enum('invited', 'accepted', 'rejected', name='status'), default='invited')
     guest = relationship('UsersModel', backref=backref('received_invitations'))
     event = relationship('EventsModel', backref=backref('sended_invitations'))
+
 class EventInvitationSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = EventsInvitationsModel
         load_instance = True
+        include_fk = True
     id = auto_field('id', dump_only=True)

@@ -41,4 +41,5 @@ def init_app(app: Flask):
     )
 
     from app.views import Events
-    api.add_resource(Events, "/events", endpoint="/events", methods=['POST'])
+    api.add_resource(Events, "/events", endpoint="/events", methods=['POST', 'GET'])
+    api.add_resource(Events, "/events/<int:event_id>", endpoint="/events/<int:event_id>", methods=['PATCH', 'DELETE'])

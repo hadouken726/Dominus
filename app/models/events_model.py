@@ -24,4 +24,6 @@ class EventSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = EventsModel
         load_instance = True
+        include_fk = True
+        update_fields = ('title', 'desc', 'start_at', 'end_at',)
     id = auto_field('id', dump_only=True)
