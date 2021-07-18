@@ -1,3 +1,5 @@
+from sqlalchemy.sql.expression import update
+from sqlalchemy.sql.functions import current_user
 from app.models.events_invitations_model import EventInvitationSchema
 from http import HTTPStatus
 from flask_jwt_extended import get_jwt_identity
@@ -46,6 +48,7 @@ class EventsService:
         self.session.commit()
 
     def post(self, requested_data: dict):
+        requested_data['host_id'] = self.current_user.id
         new_event = self._deserialize(requested_data)
         if new_event.is_important:
             if self.current_user.is_admin:
@@ -56,5 +59,20 @@ class EventsService:
             self.session.add(new_event)
             self.session.commit()
         return EventSchema().dump(new_event), HTTPStatus.CREATED
+
+    def patch(self, event_id: int, request_data: dict):
+        event = EventsModel.query.get(event_id)
+        if not event:
+            abort(HTTPStatus.NOT_FOUND, message='Event not found')
+        if event.host_id == self.current_user.id or self.current_user.is_admin:
+            updated_event = EventSchema().load(request_data, instance=event, partial=True, session=self.session)
+            self.session.add(updated_event)
+            self.session.commit()
+            return EventSchema().dump(updated_event), HTTPStatus.OK
+        else:
+            abort(HTTPStatus.UNAUTHORIZED, message='Only event host or admin users can edit the event!')
+        
+
+
         
         
