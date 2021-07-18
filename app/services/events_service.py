@@ -3,12 +3,24 @@ from sqlalchemy.sql.functions import current_user
 from app.models.events_invitations_model import EventInvitationSchema
 from http import HTTPStatus
 from flask_jwt_extended import get_jwt_identity
-from flask import current_app
+from flask import current_app, request
 from flask_restful import abort
 from app.models.users_model import UsersModel
 from app.models.events_model import EventsModel, EventSchema
 from marshmallow import ValidationError, error_store
 from typing import List
+from marshmallow import Schema, fields
+
+
+class EventsParamsSchema(Schema):
+    is_important = fields.Boolean()
+    start_at = fields.DateTime()
+    pass
+
+
+
+
+
 
 
 
@@ -72,6 +84,19 @@ class EventsService:
         else:
             abort(HTTPStatus.UNAUTHORIZED, message='Only event host or admin users can edit the event!')
         
+    def delete(self, event_id: int):
+        event_to_delete = EventsModel().query.get(event_id)
+        if not event_to_delete:
+            abort(HTTPStatus.NOT_FOUND, message='Event not found')
+        if self.current_user.is_admin or event_to_delete.host_id == self.current_user.id:
+            self.session.delete(event_to_delete)
+            self.session.commit()
+            return '', HTTPStatus.NO_CONTENT
+        
+        abort(HTTPStatus.UNAUTHORIZED, message='Only admin user or event host can delete this event')
+
+    def get_all(self):
+        pass
 
 
         

@@ -11,7 +11,7 @@ class Events(Resource):
         return response
 
     def get(self):
-        pass
+        print(request.args)
 
     def patch(self, event_id):
         request_data = request.get_json()
@@ -19,6 +19,8 @@ class Events(Resource):
         response = events_service.patch(event_id, request_data)
         return response
 
-    def delete(self):
-        pass
+    def delete(self, event_id):
+        events_service = EventsService(3)
+        response = events_service.delete(events_service)
+        return response
     
