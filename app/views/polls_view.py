@@ -7,8 +7,6 @@ from http import HTTPStatus
 from flask_restful import Resource
 import sqlalchemy.exc as e
 
-from app.settings.database import db
-
 
 class Polls(Resource):
     def get(self, poll_id=None):

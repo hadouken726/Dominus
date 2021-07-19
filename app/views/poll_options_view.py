@@ -6,8 +6,6 @@ from http import HTTPStatus
 from flask_restful import Resource
 import sqlalchemy.exc as e
 
-from app.settings.database import db
-
 class PollOptions(Resource):
     def get(self, poll_option_id=None):
         if poll_option_id is None:

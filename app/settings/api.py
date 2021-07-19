@@ -1,4 +1,3 @@
-from app.views.poll_options_view import PollOptions
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
