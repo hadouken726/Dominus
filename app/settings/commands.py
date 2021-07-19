@@ -175,8 +175,7 @@ def cli_poll_options(app: Flask):
     def cli_poll_options_populate(amount: str):
         session = app.db.session
 
-        for _ in range(int(amount)):
-            count = 1
+        for count in range(int(amount)):
             poll_option = {"name": f"Option {count}"}
             # TODO [ ] poll_id = COMO PUXAR OS VALORES DA RELAÇÃO ENTRE AS TABELAS
 
@@ -184,8 +183,6 @@ def cli_poll_options(app: Flask):
 
             session.add(poll_option)
             session.commit()
-
-            count += 1
 
         click.echo(
             f"The table PollOptionsModel was populated with {amount} poll(s) options!"

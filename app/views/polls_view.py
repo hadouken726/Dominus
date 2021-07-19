@@ -1,16 +1,11 @@
 from flask.json import load
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, current_app
-from marshmallow.exceptions import ValidationError
 from sqlalchemy.orm import session
 from app.models.polls_model import PollsModel, PollSchema
 from marshmallow import pre_load
 from http import HTTPStatus
 from flask_restful import Resource
 import sqlalchemy.exc as e
-import json
-
-from app.settings.database import db
 
 
 class Polls(Resource):
