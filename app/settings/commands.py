@@ -48,10 +48,13 @@ def cli_users(app: Flask):
                     upper_case=True,
                     lower_case=True,
                 ),
-                "home_number": fake.pyint(min_value=101, max_value=108, step=1),
+                "is_home_in_possession": True
             }
 
+            password_to_hash = user.pop("password")
             user = UsersModel(**user)
+
+            user.password = password_to_hash
 
             session.add(user)
             session.commit()
@@ -101,7 +104,7 @@ def cli_notices(app: Flask):
         session.query(NoticesModel).delete()
         session.commit()
 
-        echo("NoticesModel table data was deleted!")
+        click.echo("NoticesModel table data was deleted!")
 
     @cli_notices_group.command("populate")
     @click.argument("amount")
@@ -175,7 +178,7 @@ def cli_poll_options(app: Flask):
         for _ in range(int(amount)):
             count = 1
             poll_option = {"name": f"Option {count}"}
-            #TODO [ ] poll_id = COMO PUXAR OS VALORES DA RELAÇÃO ENTRE AS TABELAS 
+            # TODO [ ] poll_id = COMO PUXAR OS VALORES DA RELAÇÃO ENTRE AS TABELAS
 
             poll_option: PollOptionsModel = PollOptionsModel(**poll_option)
 
