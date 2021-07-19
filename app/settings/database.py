@@ -1,7 +1,5 @@
-from os import read
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql.expression import false
 from flask_marshmallow import Marshmallow
 
 db = SQLAlchemy()
@@ -16,10 +14,17 @@ def init_app(app: Flask):
     db.init_app(app)
     ma.init_app(app)
     app.db = db
-    from app.models.users_model import UsersModel
-    from app.models.notices_model import NoticesModel
     from app.models.homes_model import HomesModel
+    
+    from app.models.users_model import UsersModel
+
+    from app.models.notices_model import NoticesModel
+
+    #Não tirar da ordem
     from app.models.polls_model import PollsModel
     from app.models.poll_options_model import PollOptionsModel
     from app.models.polls_votes_model import PollsVotesModel
+    #Não tirar da ordem
+    from app.models.events_model import EventsModel
+    from app.models.events_invitations_model import EventsInvitationsModel
     

@@ -16,3 +16,10 @@ class HomesModel(db.Model):
     area = Column(Float)
     block = Column(String(3))
     residents = relationship('UsersModel', backref=backref('home'))
+
+class HomeSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = HomesModel
+        load_instance = True
+        ordered = True
+    id = auto_field('id', dump_only=True)
