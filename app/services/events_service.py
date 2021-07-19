@@ -1,6 +1,6 @@
 from sqlalchemy.sql.expression import update
 from sqlalchemy.sql.functions import current_user
-from app.models.events_invitations_model import EventInvitationSchema
+from app.models.events_invitations_model import EventInvitationSchema, EventsInvitationsModel
 from http import HTTPStatus
 from flask_jwt_extended import get_jwt_identity
 from flask import current_app, request
@@ -96,7 +96,27 @@ class EventsService:
         abort(HTTPStatus.UNAUTHORIZED, message='Only admin user or event host can delete this event')
 
     def get_all(self):
-        pass
+        all_events = EventsModel.query.all()
+        events_hosted_by_current_user = list(EventsModel.query.filter_by(host_id=self.current_user.id))
+        accepted_invitations = EventsInvitationsModel.query.filter(EventsInvitationsModel.guest_id == self.current_user.id, EventsInvitationsModel.status == 'accepted')
+        events_in = [invitation.event for invitation in accepted_invitations]
+        if self.current_user.is_admin:
+            return all_events
+        return EventSchema().dump(events_hosted_by_current_user + events_in, many=True)
+    
+    def get(self, event_id):
+        event = EventsModel.query.get(event_id)
+        current_user_invitations_received = EventsInvitationsModel.query.filter_by(guest_id=self.current_user.id)
+        is_current_user_invited = False
+        if any([event.id == ri.event_id for ri in current_user_invitations_received]):
+            is_invited = True
+
+        if not event:
+            abort(HTTPStatus.NOT_FOUND, message='Event not found')
+        if self.current_user.id == event.host_id or self.current_user.is_admin or is_current_user_invited:
+            return EventSchema().dump(event), HTTPStatus.OK
+        abort(HTTPStatus.UNAUTHORIZED, message="Current user can't access this event")
+
 
 
         

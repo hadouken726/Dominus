@@ -10,8 +10,10 @@ class Events(Resource):
         response = events_service.post(request_data)
         return response
 
-    def get(self):
-        print(request.args)
+    def get(self, event_id=None):
+        if event_id is None:
+            return EventsService(3).get_all()
+        return EventsService(3).get(event_id)
 
     def patch(self, event_id):
         request_data = request.get_json()
@@ -21,6 +23,6 @@ class Events(Resource):
 
     def delete(self, event_id):
         events_service = EventsService(3)
-        response = events_service.delete(events_service)
+        response = events_service.delete(event_id)
         return response
     
