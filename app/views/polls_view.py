@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, current_app
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.orm import session
-from app.models.polls_model import PollsModel, PollsSchema
+from app.models.polls_model import PollsModel, PollSchema
 from marshmallow import pre_load
 from http import HTTPStatus
 from flask_restful import Resource
@@ -17,13 +17,13 @@ class Polls(Resource):
     def get(self, poll_id=None):
         if poll_id is None:
             polls: PollsModel = PollsModel().query.all()
-            polls_schema = PollsSchema()
+            polls_schema = PollSchema()
             return {"polls": polls_schema.dump(polls, many=True)}, HTTPStatus.OK
 
         else:
             try:
                 poll: PollsModel = PollsModel().query.get_or_404(poll_id)
-                polls_schema = PollsSchema()
+                polls_schema = PollSchema()
                 return polls_schema.dump(poll), HTTPStatus.OK
 
             except e.DataError:
@@ -36,9 +36,10 @@ class Polls(Resource):
     def post(self):
         session = current_app.db.session
         data = request.get_json()
-        new_poll: PollsModel = PollsModel(**data)
+        poll_schema = PollSchema()
+        new_poll = poll_schema.load(data, session=session)
 
         session.add(new_poll)
         session.commit()
 
-        return {"msg": new_poll.title}
+        return poll_schema.dump(new_poll)
