@@ -22,6 +22,7 @@ class PollSchema(ma.SQLAlchemyAutoSchema):
         model = PollsModel
         load_instance = True
         ordered = True
+        include_fk = True
     id = auto_field('id', dump_only=True)
 
 

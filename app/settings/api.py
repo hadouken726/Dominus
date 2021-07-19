@@ -1,3 +1,4 @@
+from app.views.poll_options_view import PollOptions
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
@@ -32,12 +33,6 @@ def init_app(app: Flask):
         methods=["GET", "DELETE", "PATCH"],
     )
 
-    from app.views import Polls
-
-    api.add_resource(Polls, "/polls", endpoint="/polls", methods=["POST", "GET" ])
-    api.add_resource(
-        Polls, "/polls/<poll_id>", endpoint="/polls/<poll_id>", methods=["GET"]
-    )
 
     from app.views import Events
     api.add_resource(Events, "/events", endpoint="/events", methods=['POST', 'GET'])
@@ -46,3 +41,16 @@ def init_app(app: Flask):
     from app.views import Invitations
     api.add_resource(Invitations, "/invitations/<int:invitation_id>", endpoint="/invitations/<int:invitation_id>", methods=['PATCH', 'DELETE'])
     
+    from app.views import PollOptions
+
+    api.add_resource(PollOptions, "/poll_options", endpoint="/poll_options", methods=["GET", "POST"])
+    api.add_resource(
+        PollOptions, "/poll_options/<poll_option_id>", endpoint="/poll_options/<poll_option_id>", methods=["GET"]
+    )
+    
+    from app.views import Polls
+
+    api.add_resource(Polls, "/polls", endpoint="/polls", methods=["POST", "GET" ])
+    api.add_resource(
+        Polls, "/polls/<poll_id>", endpoint="/polls/<poll_id>", methods=["GET"]
+    )
