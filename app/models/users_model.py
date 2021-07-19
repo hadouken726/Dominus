@@ -1,9 +1,12 @@
+from ipdb.__main__ import set_trace
+from marshmallow_sqlalchemy.schema import auto_field
+from sqlalchemy.orm import load_only
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import CHAR, Integer, String, Boolean
 from sqlalchemy.schema import Column
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app.settings.database import db
+from app.settings.database import db, ma
 
 
 class UsersModel(db.Model):
@@ -26,5 +29,14 @@ class UsersModel(db.Model):
     def password_hash(self, password_to_hash):
         self.password = generate_password_hash(password_to_hash)
 
-    def check_password(self, password_to_compare) -> Boolean:
-        return check_password_hash(self.password_hash, password_to_compare)
+    def check_password(self, password_to_compare):
+        return check_password_hash(self.password, password_to_compare)
+
+        
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = UsersModel
+        load_instance = True
+        ordered = True
+    id = auto_field('id', dump_only=True)
+    password = auto_field('password', load_only=True)

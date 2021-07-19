@@ -4,6 +4,7 @@ from sqlalchemy.orm import query
 from app.models.users_model import UsersModel
 from flask_restful import Resource
 from flask_jwt_extended import create_access_token
+# from ipdb import set_trace
 
 # from ipdb import set_trace
 
