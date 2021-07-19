@@ -10,8 +10,10 @@ class Events(Resource):
         response = events_service.post(request_data)
         return response
 
-    def get(self):
-        return EventsService(3).get_all()
+    def get(self, event_id=None):
+        if event_id is None:
+            return EventsService(3).get_all()
+        return EventsService(3).get(event_id)
 
     def patch(self, event_id):
         request_data = request.get_json()
