@@ -34,8 +34,7 @@ def init_app(app: Flask):
 
     from app.views import Polls
 
-    api.add_resource(Polls, "/polls", endpoint="/poll", methods=["POST"])
-    api.add_resource(Polls, "/polls", endpoint="/polls", methods=["GET"])
+    api.add_resource(Polls, "/polls", endpoint="/polls", methods=["POST", "GET" ])
     api.add_resource(
         Polls, "/polls/<poll_id>", endpoint="/polls/<poll_id>", methods=["GET"]
     )
