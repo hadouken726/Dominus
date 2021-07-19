@@ -22,15 +22,15 @@ class PollsModel(db.Model):
     )
 
 
-# class PollsSchema(ma.SQLAlchemyAutoSchema):
-#     class Meta:
-#         model = PollsModel
-#         load_instance = True
-#         ordered = True
+class PollsSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = PollsModel
+        load_instance = True
+        ordered = True
 
-#     id = auto_field()
-#     started_at = auto_field()
-#     end_at = auto_field()
-#     desc = auto_field()
-#     title = auto_field()
-#     votes = auto_field()
+    # id = auto_field()
+    # started_at = auto_field()
+    # end_at = auto_field()
+    # desc = auto_field()
+    # title = auto_field()
+    # votes = auto_field()

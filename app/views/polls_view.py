@@ -1,9 +1,9 @@
-from flask.json import jsonify, load
+from flask.json import load
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, current_app
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.orm import session
-from app.models.polls_model import PollsModel
+from app.models.polls_model import PollsModel, PollsSchema
 from marshmallow import pre_load
 from http import HTTPStatus
 from flask_restful import Resource
@@ -17,11 +17,21 @@ class Polls(Resource):
     def get(self, poll_id=None):
         if poll_id is None:
             polls: PollsModel = PollsModel().query.all()
-            return {"msg": polls.title}
+            polls_schema = PollsSchema()
+            return {"polls": polls_schema.dump(polls, many=True)}, HTTPStatus.OK
 
         else:
-            poll: PollsModel = PollsModel().query.get(poll_id)
-            return {"title": poll.title}
+            try:
+                poll: PollsModel = PollsModel().query.get_or_404(poll_id)
+                polls_schema = PollsSchema()
+                return polls_schema.dump(poll), HTTPStatus.OK
+
+            except e.DataError:
+                return {
+                    "message": "invalid number, just accept int with register ids",
+                        "error": "DataError"
+                }, HTTPStatus.BAD_REQUEST
+
 
     def post(self):
         session = current_app.db.session
