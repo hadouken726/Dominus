@@ -12,11 +12,12 @@ class PollOptionsModel(db.Model):
 
     id = Column(Integer, primary_key=True)
     poll_id = Column(Integer, ForeignKey('polls.id'))
-    name = Column(String(100), nullable=False)
+    name = Column(String(100), nullable=False, unique=True)
 
 class PollOptionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = PollOptionsModel
         load_instance = True
         ordered = True
+        include_fk = True
     id = auto_field('id', dump_only=True)
