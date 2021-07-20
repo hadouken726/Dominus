@@ -21,17 +21,6 @@ class UsersModel(db.Model):
     is_admin = Column(Boolean, default=False)
     is_home_in_possession = Column(Boolean, nullable=False, default=False)
 
-    # @property
-    # def password_hash(self):
-    #     raise AttributeError("Password cannot be accessed!")
-
-    # @password_hash.setter
-    # def password_hash(self, password_to_hash):
-    #     self.password = generate_password_hash(password_to_hash)
-
-    # def check_password(self, password_to_compare):
-    #     return check_password_hash(self.password, password_to_compare)
-
         
 class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
