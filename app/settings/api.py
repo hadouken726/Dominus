@@ -45,15 +45,17 @@ def init_app(app: Flask):
 
     api.add_resource(PollOptions, "/poll_options", endpoint="/poll_options", methods=["GET", "POST"])
     api.add_resource(
-        PollOptions, "/poll_options/<poll_option_id>", endpoint="/poll_options/<poll_option_id>", methods=["GET"]
+        PollOptions, "/poll_options/<poll_option_id>", endpoint="/poll_options/<int:poll_option_id>", methods=["DELETE", "PATCH", "GET"]
     )
 
     from app.views import Polls
 
     api.add_resource(Polls, "/polls", endpoint="/polls", methods=["POST", "GET"])
     api.add_resource(
-        Polls, "/polls/<poll_id>", endpoint="/polls/<poll_id>", methods=["GET"]
+
+        Polls, "/polls/<poll_id>", endpoint="/polls/<int:poll_id>", methods=["DELETE", "PATCH", "GET"]
     )
+
 
     from app.views import Homes
 
@@ -65,3 +67,4 @@ def init_app(app: Flask):
         endpoint="/homes/<home_id>",
         methods=["GET"]
     )
+
