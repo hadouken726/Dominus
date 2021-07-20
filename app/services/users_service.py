@@ -64,14 +64,6 @@ class UsersService:
     def patch(self, user_id):
         user_to_patch = UsersModel.query.get_or_404(user_id)
         data_entry = request.get_json()
-        if self.current_user.is_admin:
-            try:
-                updated_user = UserSchema(exclude=['password']).load(data_entry, instance=user_to_patch, session=self.session, partial=True)
-                self.session.add(updated_user)
-                self.session.commit()
-                return UserSchema().dump(updated_user), HTTPStatus.OK
-            except ValidationError as VE:
-                abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
         if self.current_user.id == user_to_patch.id:
             try:
                 updated_user = UserSchema(only=['password']).load(data_entry, instance=user_to_patch, session=self.session, partial=True)
@@ -80,7 +72,15 @@ class UsersService:
                 self.session.commit()
                 return UserSchema().dump(updated_user), HTTPStatus.OK
             except ValidationError as VE:
-                abort(HTTPStatus.BAD_REQUEST, message=VE.messages)       
+                abort(HTTPStatus.BAD_REQUEST, message=VE.messages)    
+        if self.current_user.is_admin:
+            try:
+                updated_user = UserSchema(exclude=['password']).load(data_entry, instance=user_to_patch, session=self.session, partial=True)
+                self.session.add(updated_user)
+                self.session.commit()
+                return UserSchema().dump(updated_user), HTTPStatus.OK
+            except ValidationError as VE:
+                abort(HTTPStatus.BAD_REQUEST, message=VE.messages)   
         abort(HTTPStatus.UNAUTHORIZED, message='Edit allowed only for admin or own user!')
         
         

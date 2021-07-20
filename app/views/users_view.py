@@ -16,7 +16,7 @@ class Users(Resource):
         response = UsersService(current_user_id).post(request_data)
         return response
 
-
+    @jwt_required()
     def get(self, user_id=None):
         current_user_id = get_jwt_identity()
         users_service = UsersService(current_user_id)
@@ -24,13 +24,13 @@ class Users(Resource):
             return users_service.get_all()
         return users_service.get_one(user_id)
           
-
+    @jwt_required()
     def delete(self, user_id: int):
         current_user_id = get_jwt_identity()
         return UsersService(current_user_id).delete(user_id)
 
        
-
+    @jwt_required()
     def patch(self, user_id: int):
         current_user_id = get_jwt_identity()
         return UsersService(current_user_id).patch(user_id)
