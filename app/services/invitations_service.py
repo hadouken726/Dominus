@@ -21,15 +21,22 @@ class InvitationsService:
             self.session = current_app.db.session
         else:
             abort(HTTPStatus.BAD_REQUEST, message='Invalid user!')
-    
-    def _deserialize(self, invitation_data: dict):
-        try:
-            return EventInvitationSchema().load(invitation_data, session=self.session)
-        except ValidationError as VE:
-            abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
 
-    def get(self):
-        pass
+    def get_all(self):
+        invitations_received = list(EventsInvitationsModel.query.filter_by(guest_id=self.current_user.id))
+        hosted_events = EventsModel.query.filter_by(host_id=self.current_user.id)
+        invitations_sended = []
+        for he in hosted_events:
+            invitations_sended.extend(he.sended_invitations) 
+        all_invitations = invitations_received + invitations_sended
+        return EventInvitationSchema().dump(all_invitations, many=True), HTTPStatus.OK
+
+
+    def get_one(self, invitation_id):
+        invitation = EventsInvitationsModel.query.get_or_404(invitation_id)
+        if invitation.guest_id == self.current_user.id or invitation.event.host_id == self.current_user.id:
+            return EventInvitationSchema().dump(invitation), HTTPStatus.OK
+        abort(HTTPStatus.UNAUTHORIZED, message='User is not in the event!')
 
     def patch(self, invitation_id):
         invitation = EventsInvitationsModel.query.get(invitation_id)
