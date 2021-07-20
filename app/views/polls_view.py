@@ -9,6 +9,7 @@ from http import HTTPStatus
 import sqlalchemy.exc as e
 
 from app.models.polls_model import PollsModel, PollSchema
+from app.models.users_model import UsersModel
 
 class Polls(Resource):
     def get(self, poll_id=None):
@@ -29,10 +30,11 @@ class Polls(Resource):
                         "error": "DataError"
                 }, HTTPStatus.BAD_REQUEST
 
-    @jwt_required
+    @jwt_required()
     def post(self):
-        is_admin = get_jwt_identity()["admin"]
-        if is_admin:
+        current_user_id = get_jwt_identity()
+        current_user = UsersModel().query.get(current_user_id)
+        if current_user.is_admin:
             try:
                 session = current_app.db.session
                 data = request.get_json()
@@ -46,13 +48,14 @@ class Polls(Resource):
             
             except ValidationError as VE:
                 return VE.messages
-        if not is_admin:
+        if not current_user_id:
             return {"message": "user don't have admin permission to create a new notice"}, HTTPStatus.UNAUTHORIZED
 
-
+    @jwt_required()
     def delete(self, poll_id=None):
-        is_admin = get_jwt_identity()["id"]
-        if is_admin:
+        current_user_id = get_jwt_identity()
+        current_user = UsersModel().query.get(current_user_id)
+        if current_user.is_admin:
             session = current_app.db.session
             poll = PollsModel.query.get_or_404(poll_id)
 
@@ -63,9 +66,9 @@ class Polls(Resource):
                 "message": f"Poll {poll.id} has been deleted"
             }
         
-        if not is_admin:
+        if not current_user.is_admin:
             return {
-                "message": "user don't have admin permission to create a new notice"
+                "message": "user don't have admin permission to delete polls"
             }, HTTPStatus.UNAUTHORIZED
 
     @jwt_required()
