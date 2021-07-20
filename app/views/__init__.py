@@ -5,6 +5,7 @@ from app.views.poll_options_view import PollOptions
 from app.views.polls_view import Polls
 from app.views.events_view import Events
 from app.views.invitations_view import Invitations
+from app.views.homes_view import Homes
 
 
 

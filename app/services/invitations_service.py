@@ -1,3 +1,4 @@
+from app.models.events_model import EventsModel
 from functools import partial
 from http import HTTPStatus
 from flask_jwt_extended import get_jwt_identity
@@ -49,4 +50,14 @@ class InvitationsService:
             self.session.commit()
             return '', HTTPStatus.NO_CONTENT
         abort(HTTPStatus.UNAUTHORIZED, message='Only event host can delete a invitation')
+
+    # def post(self):
+    #     request_data = request.get_json()
+    #     try:
+    #         new_invite = EventInvitationSchema().load(request_data, session=self.session)
+    #     except ValidationError as VE:
+    #         abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
+    #     event = EventsModel.query.get(new_invite.id)
+    #     user_to_invite = UsersModel.query.get(new_invite.guest_id)
+        
         
