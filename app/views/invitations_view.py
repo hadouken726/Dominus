@@ -13,11 +13,14 @@ class Invitations(Resource):
 
     @jwt_required()
     def patch(self, invitation_id):
-        invitations_service = InvitationsService(3)
+        current_user_id = get_jwt_identity()
+        invitations_service = InvitationsService(current_user_id)
         return invitations_service.patch(invitation_id)
     
 
     @jwt_required()    
     def delete(self, invitation_id):
-        return InvitationsService(1).delete(invitation_id)
+        current_user_id = get_jwt_identity()
+        return InvitationsService(current_user_id).delete(invitation_id)
+    
     
