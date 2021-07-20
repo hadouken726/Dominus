@@ -109,7 +109,7 @@ class EventsService:
         current_user_invitations_received = EventsInvitationsModel.query.filter_by(guest_id=self.current_user.id)
         is_current_user_invited = False
         if any([event.id == ri.event_id for ri in current_user_invitations_received]):
-            is_invited = True
+            is_current_user_invited = True
 
         if not event:
             abort(HTTPStatus.NOT_FOUND, message='Event not found')
