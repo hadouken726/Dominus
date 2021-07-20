@@ -33,7 +33,7 @@ class PollOptions(Resource):
 
     @jwt_required()
     def post(self):
-        is_admin = get_jwt_identity()["Admin"]
+        is_admin = get_jwt_identity()
         if is_admin:
             try:
                 session = current_app.db.session
@@ -54,7 +54,7 @@ class PollOptions(Resource):
     
     @jwt_required()
     def delete(self, poll_option_id=None):
-        is_admin = get_jwt_identity()["id"]
+        is_admin = get_jwt_identity()
         if is_admin:
             session = current_app.db.session
             poll_option = PollOptionsModel().query.get_or_404(poll_option_id)
@@ -67,7 +67,7 @@ class PollOptions(Resource):
 
         if not is_admin:
             return {
-                "message": "user don't have admin permission to create a new notice"
+                "message": "user don't have admin permission to delete a poll option"
             }, HTTPStatus.UNAUTHORIZED
 
     def patch(self, poll_option_id=None):
