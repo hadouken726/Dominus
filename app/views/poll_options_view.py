@@ -1,5 +1,3 @@
-from functools import partial
-from flask.json import load
 from flask import request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
