@@ -3,6 +3,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.orm import session
 from app.models.polls_votes_model import PollVoteSchema, PollsVotesModel
+from app.models.users_model import UsersModel
+from app.models.poll_options_model import PollOptionsModel
 from http import HTTPStatus
 from flask_restful import Resource
 import sqlalchemy.exc as e
@@ -29,3 +31,15 @@ class PollsVotes(Resource):
                 }, HTTPStatus.BAD_REQUEST
 
     
+    def post(self, current_user: UsersModel, poll_option: PollOptionsModel):
+        session = 
+        poll_vote = PollsVotes()
+        
+
+
+
+
+
+
+
+
