@@ -48,7 +48,14 @@ def init_app(app: Flask):
         Invitations,
         "/invitations/<int:invitation_id>",
         endpoint="/invitations/<int:invitation_id>",
-        methods=["PATCH", "DELETE"],
+        methods=["PATCH", "DELETE", "GET"],
+    )
+
+    api.add_resource(
+        Invitations,
+        "/invitations",
+        endpoint="/invitations",
+        methods=["GET"],
     )
 
     from app.views import PollOptions
