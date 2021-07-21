@@ -101,7 +101,7 @@ class EventsService:
         accepted_invitations = EventsInvitationsModel.query.filter(EventsInvitationsModel.guest_id == self.current_user.id, EventsInvitationsModel.status == 'accepted')
         events_in = [invitation.event for invitation in accepted_invitations]
         if self.current_user.is_admin:
-            return all_events
+            return EventSchema().dump(all_events)
         return EventSchema().dump(events_hosted_by_current_user + events_in, many=True)
     
     def get(self, event_id):
