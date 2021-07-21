@@ -15,6 +15,7 @@ class FeesModel(db.Model):
     due_date = Column(Date, nullable=False)
     value = Column(Float, nullable=False)
     payment_date = Column(Date, nullable=False)
+    home = relationship('HomesModel', backref=backref('fees'))
     
 
 class FeeSchema(ma.SQLAlchemyAutoSchema):
