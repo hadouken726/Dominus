@@ -59,12 +59,12 @@ def init_app(app: Flask):
 
     from app.views import Homes
 
-    api.add_resource(Homes, "/homes", endpoint="/homes", methods=["GET"]
+    api.add_resource(Homes, "/homes", endpoint="/homes", methods=["GET", "POST"]
                      )
     api.add_resource(
         Homes,
         "/homes/<home_id>",
         endpoint="/homes/<home_id>",
-        methods=["GET"]
+        methods=["GET", "DELETE", "PATCH"]
     )
 
