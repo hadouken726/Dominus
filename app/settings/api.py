@@ -55,7 +55,7 @@ def init_app(app: Flask):
         Invitations,
         "/invitations",
         endpoint="/invitations",
-        methods=["GET"],
+        methods=["GET", "POST"]
     )
 
     from app.views import PollOptions

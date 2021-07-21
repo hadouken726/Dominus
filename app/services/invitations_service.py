@@ -1,3 +1,4 @@
+from operator import ne
 from app.models.events_model import EventsModel
 from functools import partial
 from http import HTTPStatus
@@ -58,13 +59,19 @@ class InvitationsService:
             return '', HTTPStatus.NO_CONTENT
         abort(HTTPStatus.UNAUTHORIZED, message='Only event host can delete a invitation')
 
-    # def post(self):
-    #     request_data = request.get_json()
-    #     try:
-    #         new_invite = EventInvitationSchema().load(request_data, session=self.session)
-    #     except ValidationError as VE:
-    #         abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
-    #     event = EventsModel.query.get(new_invite.id)
-    #     user_to_invite = UsersModel.query.get(new_invite.guest_id)
+    def post(self, request_data):
+        try:
+            new_invite = EventInvitationSchema(exclude=['status']).load(request_data, session=self.session)
+        except ValidationError as VE:
+            abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
+        event = EventsModel.query.get_or_404(new_invite.id, description={'message': 'Event not found!'})
+        user_to_invite = UsersModel.query.get(new_invite.guest_id, description={'message': 'User not found!'})
+        if self.current_user.id != event.host_id:
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='User is not host of the event!')
+        if user_to_invite.id == self.current_user.id:
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, message="User can't invite himself")
+        self.session.add(new_invite)
+        self.session.commit()
+        return EventInvitationSchema().dump(new_invite)
         
         
