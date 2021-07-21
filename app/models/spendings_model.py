@@ -16,6 +16,7 @@ class SpendingsModel(db.Model):
     title = Column(String, nullable=False)
     desc = Column(String, nullable=False)
     date = Column(DateTime, nullable=False)
+    category = relationship('SpendingsCategoriesModel', backref=backref('spendings'))
     
 
 class SpendingSchema(ma.SQLAlchemyAutoSchema):
