@@ -39,7 +39,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('event_id', sa.Integer(), nullable=True),
     sa.Column('guest_id', sa.Integer(), nullable=True),
-    sa.Column('status', sa.Enum('invited', 'accepted', 'rejected', name='status'), nullable=False),
+    sa.Column('status', sa.Enum('invited', 'accepted', 'rejected', name='status0'), nullable=False),
     sa.ForeignKeyConstraint(['event_id'], ['events.id'], ),
     sa.ForeignKeyConstraint(['guest_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
