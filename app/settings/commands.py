@@ -1,9 +1,11 @@
 import click
+import random
 from flask import Flask
 from flask.cli import AppGroup
 from faker import Faker
 from faker.providers.ssn import pt_BR
 from faker.providers import ssn
+from werkzeug.security import generate_password_hash
 
 from click import argument, echo
 from datetime import datetime, timedelta
@@ -12,6 +14,7 @@ from app.models.notices_model import NoticesModel
 from app.models.users_model import UsersModel
 from app.models.polls_model import PollsModel
 from app.models.poll_options_model import PollOptionsModel
+from app.models.homes_model import HomesModel
 
 fake = Faker("pt_BR")
 fake.add_provider(ssn)
@@ -38,25 +41,18 @@ def cli_users(app: Flask):
 
         for _ in range(int(amount)):
             user = {
-                "cpf": fake.cpf(),
-                "phone": fake.msisdn(),
+                "cpf": "%0.11d" % random.randint(0,99999999999),
+                "phone": fake.msisdn()[2:],
                 "name": fake.name(),
-                "password": fake.password(
-                    length=10,
-                    special_chars=True,
-                    digits=True,
-                    upper_case=True,
-                    lower_case=True,
-                ),
-                "is_home_in_possession": True
+                "password": "123456",
             }
 
             password_to_hash = user.pop("password")
-            user = UsersModel(**user)
+            new_user = UsersModel(**user)
 
-            user.password = password_to_hash
+            new_user.password = generate_password_hash(password_to_hash)
 
-            session.add(user)
+            session.add(new_user)
             session.commit()
 
             click.echo(f"The table UsersModel was populated with {amount} users!")
@@ -67,29 +63,24 @@ def cli_users(app: Flask):
         session = app.db.session
 
         user = {
-            "cpf": fake.cpf(),
-            "phone": fake.cellphone_number(),
+            "cpf": "%0.11d" % random.randint(0,99999999999),
+            "phone": fake.msisdn()[2:],
             "name": fake.name(),
-            "password": fake.password(
-                length=10,
-                special_chars=True,
-                digits=True,
-                upper_case=True,
-                lower_case=True,
-            ),
+            "password": "654321",
             "is_admin": True,
-            "home_number": fake.pyint(min_value=201, max_value=208, step=1),
         }
 
-        user = UsersModel(**user)
+        password_to_hash = user.pop("password")
+        new_user = UsersModel(**user)
+        new_user.password = generate_password_hash(password_to_hash)
 
-        session.add(user)
+        session.add(new_user)
         session.commit()
 
         click.echo("Admin was created!")
-        click.echo(f"Admin --> {user.name}")
-        click.echo(f"CPF --> {user.cpf}")
-        click.echo(f"Password --> {user.password}")
+        click.echo(f"Admin --> {new_user.name}")
+        click.echo(f"CPF --> {new_user.cpf}")
+        click.echo(f"Password --> {new_user.password}")
 
     app.cli.add_command(cli_users_group)
 
@@ -200,8 +191,35 @@ def cli_poll_options(app: Flask):
     app.cli.add_command(cli_poll_options_group)
 
 
+
+def cli_homes(app: Flask):
+    cli_homes_group = AppGroup("homes")
+
+    @cli_homes_group.command("populate")
+    @click.argument("amount")
+    def cli_poll_options_populate(amount: str):
+        session = app.db.session
+
+        for count in range(int(amount)):
+            home: HomesModel = HomesModel(number=count + 100, area=10 + random.random()*500, block=random.choice(['A', 'B', 'C']))
+
+            session.add(home)
+            session.commit()
+
+        click.echo(
+            f"The table 'homes' was populated with {amount} home(s)!"
+        )
+    app.cli.add_command(cli_homes_group)
+
+
+
+
+
+
+
 def init_app(app: Flask):
     cli_users(app)
     cli_notices(app)
     cli_polls(app)
     cli_poll_options(app)
+    cli_homes(app)

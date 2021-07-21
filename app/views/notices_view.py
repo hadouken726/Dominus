@@ -1,3 +1,4 @@
+from app.models.users_model import UsersModel
 from flask.json import jsonify, load
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, current_app
@@ -32,8 +33,9 @@ class Notices(Resource):
 
     @jwt_required()
     def post(self):
-        is_admin = get_jwt_identity()["admin"]
-        if is_admin:
+        current_user_id = get_jwt_identity()
+        current_user = UsersModel.query.get(current_user_id)
+        if current_user.is_admin:
             try:
                 session = current_app.db.session
                 data = request.get_json()
@@ -46,35 +48,40 @@ class Notices(Resource):
             except ValidationError as VE:
                 return VE.messages
 
-        if not is_admin:
-            return {"message": "user dont have admin permission to create a new notice"}, HTTPStatus.UNAUTHORIZED
+
+        return {"message": "user dont have admin permission to create a new notice"}, HTTPStatus.UNAUTHORIZED
 
     @jwt_required()
     def delete(self, notice_id=None):
-        is_admin = get_jwt_identity()["id"]
-        if is_admin:
+        current_user_id = get_jwt_identity()
+        current_user = UsersModel.query.get(current_user_id)
+        if current_user.is_admin:
             notice = NoticesModel().query.get_or_404(notice_id)
             db.session.delete(notice)
             db.session.commit()
             return {"message": f"notice {notice.id} has been deleted"}
 
-        if not is_admin:
-            return {"message": "user dont have admin permission to create a new notice"}, HTTPStatus.UNAUTHORIZED
+
+        return {"message": "user dont have admin permission to create a new notice"}, HTTPStatus.UNAUTHORIZED
 
 
     @jwt_required()
     def patch(self, notice_id=None):
-        try:
-            data = request.get_json()
-            notice = NoticesModel.query.get_or_404(notice_id)
-            for key, value in data.items():
-                setattr(notice, key, value)
-            notice_schema = NoticeSchema()
-            patch_notice = notice_schema.load(data, session=session)
-            db.session.add(patch_notice)
-            db.session.commit()
+        current_user_id = get_jwt_identity()
+        current_user = UsersModel.query.get(current_user_id)
+        if current_user.is_admin:
+            try:
+                data = request.get_json()
+                notice = NoticesModel.query.get_or_404(notice_id)
+                for key, value in data.items():
+                    setattr(notice, key, value)
+                notice_schema = NoticeSchema()
+                patch_notice = notice_schema.load(data, session=session)
+                db.session.add(patch_notice)
+                db.session.commit()
 
-            return notice_schema.dump(patch_notice)
+                return notice_schema.dump(patch_notice)
 
-        except ValidationError as VE:
-            return VE.messages
+            except ValidationError as VE:
+                return VE.messages
+        return {"message": "user dont have admin permission to patch a notice"}, HTTPStatus.UNAUTHORIZED

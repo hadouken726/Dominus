@@ -33,38 +33,65 @@ def init_app(app: Flask):
     )
 
     from app.views import Events
-    api.add_resource(Events, "/events", endpoint="/events", methods=['POST', 'GET'])
-    api.add_resource(Events, "/events/<int:event_id>", endpoint="/events/<int:event_id>",
-                     methods=['PATCH', 'DELETE', 'GET'])
+
+    api.add_resource(Events, "/events", endpoint="/events", methods=["POST", "GET"])
+    api.add_resource(
+        Events,
+        "/events/<int:event_id>",
+        endpoint="/events/<int:event_id>",
+        methods=["PATCH", "DELETE", "GET"],
+    )
 
     from app.views import Invitations
-    api.add_resource(Invitations, "/invitations/<int:invitation_id>", endpoint="/invitations/<int:invitation_id>",
-                     methods=['PATCH', 'DELETE'])
+
+    api.add_resource(
+        Invitations,
+        "/invitations/<int:invitation_id>",
+        endpoint="/invitations/<int:invitation_id>",
+        methods=["PATCH", "DELETE", "GET"],
+    )
+
+    api.add_resource(
+        Invitations,
+        "/invitations",
+        endpoint="/invitations",
+        methods=["GET", "POST"]
+    )
 
     from app.views import PollOptions
 
-    api.add_resource(PollOptions, "/poll_options", endpoint="/poll_options", methods=["GET", "POST"])
     api.add_resource(
-        PollOptions, "/poll_options/<poll_option_id>", endpoint="/poll_options/<int:poll_option_id>", methods=["DELETE", "PATCH", "GET"]
+        PollOptions, "/poll_options", endpoint="/poll_options", methods=["GET", "POST"]
+    )
+    api.add_resource(
+        PollOptions,
+        "/poll_options/<poll_option_id>",
+        endpoint="/poll_options/<int:poll_option_id>",
+        methods=["DELETE", "PATCH", "GET"],
     )
 
     from app.views import Polls
 
     api.add_resource(Polls, "/polls", endpoint="/polls", methods=["POST", "GET"])
     api.add_resource(
-
-        Polls, "/polls/<poll_id>", endpoint="/polls/<int:poll_id>", methods=["DELETE", "PATCH", "GET"]
+        Polls,
+        "/polls/<poll_id>",
+        endpoint="/polls/<int:poll_id>",
+        methods=["DELETE", "PATCH", "GET"],
     )
 
+    from app.views import PollsVotes
+
+    api.add_resource(
+        PollsVotes, "/polls_votes", endpoint="/polls_votes", methods=["GET", "POST"]
+    )
 
     from app.views import Homes
 
-    api.add_resource(Homes, "/homes", endpoint="/homes", methods=["GET"]
-                     )
+    api.add_resource(Homes, "/homes", endpoint="/homes", methods=["GET", "POST"])
     api.add_resource(
         Homes,
         "/homes/<home_id>",
         endpoint="/homes/<home_id>",
-        methods=["GET"]
+        methods=["GET", "DELETE", "PATCH"],
     )
-

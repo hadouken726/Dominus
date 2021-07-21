@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from app.services.invitations_service import InvitationsService
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import request
 
 class Invitations(Resource):
     @jwt_required()
@@ -22,5 +23,11 @@ class Invitations(Resource):
     def delete(self, invitation_id):
         current_user_id = get_jwt_identity()
         return InvitationsService(current_user_id).delete(invitation_id)
+
+    @jwt_required()
+    def post(self):
+        current_user_id = get_jwt_identity()
+        new_invitation = request.get_json()
+        return InvitationsService(current_user_id).post(new_invitation)
     
     
