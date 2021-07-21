@@ -1,9 +1,11 @@
 import click
+import random
 from flask import Flask
 from flask.cli import AppGroup
 from faker import Faker
 from faker.providers.ssn import pt_BR
 from faker.providers import ssn
+from werkzeug.security import generate_password_hash
 
 from click import argument, echo
 from datetime import datetime, timedelta
@@ -38,25 +40,18 @@ def cli_users(app: Flask):
 
         for _ in range(int(amount)):
             user = {
-                "cpf": fake.cpf(),
-                "phone": fake.msisdn(),
+                "cpf": "%0.11d" % random.randint(0,99999999999),
+                "phone": fake.msisdn()[2:],
                 "name": fake.name(),
-                "password": fake.password(
-                    length=10,
-                    special_chars=True,
-                    digits=True,
-                    upper_case=True,
-                    lower_case=True,
-                ),
-                "is_home_in_possession": True
+                "password": "123456",
             }
 
             password_to_hash = user.pop("password")
-            user = UsersModel(**user)
+            new_user = UsersModel(**user)
 
-            user.password = password_to_hash
+            new_user.password = generate_password_hash(password_to_hash)
 
-            session.add(user)
+            session.add(new_user)
             session.commit()
 
             click.echo(f"The table UsersModel was populated with {amount} users!")
@@ -67,29 +62,24 @@ def cli_users(app: Flask):
         session = app.db.session
 
         user = {
-            "cpf": fake.cpf(),
-            "phone": fake.cellphone_number(),
+            "cpf": "%0.11d" % random.randint(0,99999999999),
+            "phone": fake.msisdn()[2:],
             "name": fake.name(),
-            "password": fake.password(
-                length=10,
-                special_chars=True,
-                digits=True,
-                upper_case=True,
-                lower_case=True,
-            ),
+            "password": "654321",
             "is_admin": True,
-            "home_number": fake.pyint(min_value=201, max_value=208, step=1),
         }
 
-        user = UsersModel(**user)
+        password_to_hash = user.pop("password")
+        new_user = UsersModel(**user)
+        new_user.password = generate_password_hash(password_to_hash)
 
-        session.add(user)
+        session.add(new_user)
         session.commit()
 
         click.echo("Admin was created!")
-        click.echo(f"Admin --> {user.name}")
-        click.echo(f"CPF --> {user.cpf}")
-        click.echo(f"Password --> {user.password}")
+        click.echo(f"Admin --> {new_user.name}")
+        click.echo(f"CPF --> {new_user.cpf}")
+        click.echo(f"Password --> {new_user.password}")
 
     app.cli.add_command(cli_users_group)
 
