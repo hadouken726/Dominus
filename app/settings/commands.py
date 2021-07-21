@@ -14,6 +14,7 @@ from app.models.notices_model import NoticesModel
 from app.models.users_model import UsersModel
 from app.models.polls_model import PollsModel
 from app.models.poll_options_model import PollOptionsModel
+from app.models.homes_model import HomesModel
 
 fake = Faker("pt_BR")
 fake.add_provider(ssn)
@@ -190,8 +191,35 @@ def cli_poll_options(app: Flask):
     app.cli.add_command(cli_poll_options_group)
 
 
+
+def cli_homes(app: Flask):
+    cli_homes_group = AppGroup("homes")
+
+    @cli_homes_group.command("populate")
+    @click.argument("amount")
+    def cli_poll_options_populate(amount: str):
+        session = app.db.session
+
+        for count in range(int(amount)):
+            home: HomesModel = HomesModel(number=count + 100, area=10 + random.random()*500, block=random.choice(['A', 'B', 'C']))
+
+            session.add(home)
+            session.commit()
+
+        click.echo(
+            f"The table 'homes' was populated with {amount} home(s)!"
+        )
+    app.cli.add_command(cli_homes_group)
+
+
+
+
+
+
+
 def init_app(app: Flask):
     cli_users(app)
     cli_notices(app)
     cli_polls(app)
     cli_poll_options(app)
+    cli_homes(app)
