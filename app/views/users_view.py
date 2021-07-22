@@ -1,71 +1,37 @@
+from app.helpers.validation import validation
+from app import services
 from http import HTTPStatus
 from flask import Blueprint, Response, jsonify, request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.users_model import UsersModel
 from app.settings.database import db
-from app.services.users_service import UsersServices
-
+from app.services.users_service import UsersService
+import re
 
 
 class Users(Resource):
     @jwt_required()
     def post(self):
-        user_id = get_jwt_identity()
-        is_admin = UsersModel.query.get(user_id).is_admin
-        if is_admin:
-            data = request.get_json()
+        current_user_id = get_jwt_identity()
+        request_data = request.get_json()
+        response = UsersService(current_user_id).post(request_data)
+        return validation(request_data['cpf'], request_data['phone'], response)
 
-            new_user = UsersServices.hashing(data)
-
-            db.session.add(new_user)
-            db.session.commit()
-
-            return {"name": new_user.name}, HTTPStatus.CREATED
-        return {'msg': 'permission denied!'}
-
-
+    @jwt_required()
     def get(self, user_id=None):
-        
+        current_user_id = get_jwt_identity()
+        users_service = UsersService(current_user_id)
         if user_id is None:
-            users = UsersModel().query.all()
+            return users_service.get_all()
+        return users_service.get_one(user_id)
 
-            return {
-                    "users": [
-                        {"id": user.id, "name": user.name, "phone": user.phone}
-                        for user in users
-                    ]
-                }, HTTPStatus.ACCEPTED
-        else:
-            user = UsersModel().query.get(user_id)
-
-            return {
-                "id": user.id, "name": user.name, "phone": user.phone, "home_number": user.home.number
-            }
-
+    @jwt_required()
     def delete(self, user_id: int):
-        user = UsersModel()
-        query = user.query.get(user_id)
+        current_user_id = get_jwt_identity()
+        return UsersService(current_user_id).delete(user_id)
 
-        db.session.delete(query)
-        db.session.commit()
-
+    @jwt_required()
     def patch(self, user_id: int):
-        data = request.get_json()
-
-        user = UsersModel()
-
-        query = user.query.get(user_id)
-
-        for key, value in data.items():
-            setattr(query, key, value)
-
-        db.session.add(query)
-        db.session.commit()
-
-        return {"id": query.id, "name": query.name, "phone": query.phone, "home_number": query.home.number}
-
-
-
-
-
+        current_user_id = get_jwt_identity()
+        return UsersService(current_user_id).patch(user_id)
