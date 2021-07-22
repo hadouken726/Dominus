@@ -11,10 +11,11 @@ class FeesModel(db.Model):
     __tablename__ = 'fees'
     
     id = Column(Integer, primary_key=True)
+    title = Column(String(50), default='Taxa de condomínio')
     home_id = Column(Integer, ForeignKey('homes.id'))
     due_date = Column(Date, nullable=False)
     value = Column(Float, nullable=False)
-    payment_date = Column(Date, nullable=False)
+    payment_date = Column(Date, default=None)
     home = relationship('HomesModel', backref=backref('fees'))
     
 
