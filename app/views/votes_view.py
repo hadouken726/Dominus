@@ -1,3 +1,4 @@
+from app.views.poll_options_view import PollOptions
 from flask import request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
@@ -41,10 +42,10 @@ class PollsVotes(Resource):
         current_user_id = get_jwt_identity()
         current_user = UsersModel().query.get_or_404(current_user_id, description='User not found!')
         poll_vote = PollVoteSchema().load(data, session=session)
-        poll_id_from_option_choosen = poll_vote.option.poll_id
-        options_from_same_poll = list(PollOptionsModel.query.filter(poll_id=poll_vote.poll_id))
+        option_chosen = PollOptionsModel.query.get_or_404(poll_vote.option_id, description='Option does not exists!')
+        options_from_same_poll = list(PollOptionsModel.query.filter_by(poll_id=option_chosen.poll_id))
 
-        if PollsVotesModel.query.filter(PollsVotesModel.owner_id == current_user_id,  poll_vote.option in options_from_same_poll).first():
+        if PollsVotesModel.query.filter_by(owner_id=current_user_id).first() and option_chosen in options_from_same_poll:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='User already vote in this poll!')     
         session.add(poll_vote)
         session.commit()
