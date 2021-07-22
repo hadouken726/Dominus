@@ -76,7 +76,7 @@ class Notices(Resource):
                 for key, value in data.items():
                     setattr(notice, key, value)
                 notice_schema = NoticeSchema()
-                patch_notice = notice_schema.load(data, session=session)
+                patch_notice = notice_schema.load(data, session=session, instance=notice)
                 db.session.add(patch_notice)
                 db.session.commit()
 
