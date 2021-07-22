@@ -38,7 +38,7 @@ class EventsService:
 
     def _deserialize(self, request_data: dict):
         try:
-            new_event =  EventSchema().load(request_data, session=self.session)
+            return EventSchema().load(request_data, session=self.session)
         except ValidationError as VE:
             abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
 
