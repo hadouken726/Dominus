@@ -27,8 +27,7 @@ class FeesService:
     def post(self, request_data):
         if self.current_user.is_admin:
             try:
-                fee_to_post = FeeSchema(exclude=['home_id']).load(request_data, session=self.session)
-                fee_to_post.home_id = self.current_user.home.id
+                fee_to_post = FeeSchema().load(request_data, session=self.session)
                 self.session.add(fee_to_post)
                 self.session.commit()
             except ValidationError as VE:
@@ -42,7 +41,7 @@ class FeesService:
         fetched_fee = FeesModel.query.get_or_404(fee_id)
         if self.current_user.is_admin:
             try:
-                fee_to_patch = FeeSchema(exclude=['home_id']).load(request_data, session=self.session, instance=fetched_fee, partial=True)
+                fee_to_patch = FeeSchema().load(request_data, session=self.session, instance=fetched_fee, partial=True)
                 self.session.add(fee_to_patch)
                 self.session.commit()
             except ValidationError as VE:
