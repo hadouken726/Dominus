@@ -7,7 +7,7 @@ from app.models.poll_options_model import PollOptionsModel
 from app.models.polls_model import PollsModel
 from app.models.users_model import UsersModel
 from http import HTTPStatus
-from flask_restful import Resource
+from flask_restful import Resource, abort
 import sqlalchemy.exc as e
 import ipdb
 
@@ -38,17 +38,15 @@ class PollsVotes(Resource):
     def post(self):
         session = current_app.db.session
         data = request.get_json()
-        current_user_id = data["owner_id"]
-        selected_option_id = data["option_id"]
-        current_user = UsersModel().query.get(current_user_id)
-
-        poll_vote = PollsVotesModel(
-            owner_id=current_user_id, option_id=selected_option_id
-        )
+        current_user_id = get_jwt_identity()
+        current_user = UsersModel().query.get_or_404(current_user_id, description='User not found!')
+        poll_vote = PollVoteSchema().load(data, session=session)
+        if PollsVotesModel.query.filter(PollsVotesModel.owner_id == current_user_id, PollsVotesModel.option.poll_id == poll_vote.option.poll_id).first():
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='User already vote in this poll!')     
         session.add(poll_vote)
         session.commit()
 
-        option: PollOptionsModel = PollOptionsModel().query.get(selected_option_id)
+        option = poll_vote.option
 
         return {
             "vote": {
