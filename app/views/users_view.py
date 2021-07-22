@@ -1,4 +1,4 @@
-from app.exc.cpf_error_exc import CPFError
+from app.helpers.validation import validation
 from app import services
 from http import HTTPStatus
 from flask import Blueprint, Response, jsonify, request
@@ -16,7 +16,7 @@ class Users(Resource):
         current_user_id = get_jwt_identity()
         request_data = request.get_json()
         response = UsersService(current_user_id).post(request_data)
-        return CPFError(request_data['cpf'], response)
+        return validation(request_data['cpf'], request_data['phone'], response)
 
     @jwt_required()
     def get(self, user_id=None):
@@ -25,19 +25,13 @@ class Users(Resource):
         if user_id is None:
             return users_service.get_all()
         return users_service.get_one(user_id)
-          
+
     @jwt_required()
     def delete(self, user_id: int):
         current_user_id = get_jwt_identity()
         return UsersService(current_user_id).delete(user_id)
 
-       
     @jwt_required()
     def patch(self, user_id: int):
         current_user_id = get_jwt_identity()
         return UsersService(current_user_id).patch(user_id)
-
-
-
-
-
