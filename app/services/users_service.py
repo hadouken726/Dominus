@@ -62,7 +62,7 @@ class UsersService:
         user_to_delete = UsersModel.query.get_or_404(user_id)
         if self.current_user.is_admin:
             self.session.delete(user_to_delete)
-            self.commit()
+            self.session.commit()
             return '', HTTPStatus.NO_CONTENT
         abort(HTTPStatus.UNAUTHORIZED, message='Only admin users can delete an user!')
 
