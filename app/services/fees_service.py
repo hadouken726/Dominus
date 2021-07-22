@@ -41,7 +41,7 @@ class FeesService:
         fetched_fee = FeesModel.query.get_or_404(fee_id)
         if self.current_user.is_admin:
             try:
-                fee_to_patch = FeeSchema().load(request_data, session=self.session, instance=fetched_fee, partial=True)
+                fee_to_patch = FeeSchema(exclude=['home_id']).load(request_data, session=self.session, instance=fetched_fee, partial=True)
                 self.session.add(fee_to_patch)
                 self.session.commit()
             except ValidationError as VE:
