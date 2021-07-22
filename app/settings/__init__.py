@@ -6,6 +6,7 @@ def init_app(app: Flask):
 
     env = Env()
     env.read_env()
+    app.config['PROPAGATE_EXCEPTIONS'] = env('PROPAGATE_EXCEPTIONS')
     app.config["JSON_SORT_KEYS"] = False
     app.config['JWT_SECRET_KEY'] = env('JWT_SECRET_KEY')
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
