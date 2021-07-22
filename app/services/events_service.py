@@ -38,7 +38,7 @@ class EventsService:
 
     def _deserialize(self, request_data: dict):
         try:
-            return EventSchema().load(request_data, session=self.session)
+            new_event =  EventSchema().load(request_data, session=self.session)
         except ValidationError as VE:
             abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
 
@@ -60,8 +60,8 @@ class EventsService:
         self.session.commit()
 
     def post(self, requested_data: dict):
-        requested_data['host_id'] = self.current_user.id
         new_event = self._deserialize(requested_data)
+        new_event.host_id = self.current_user.id
         if new_event.is_important:
             if self.current_user.is_admin:
                 self._admin_post(new_event)
