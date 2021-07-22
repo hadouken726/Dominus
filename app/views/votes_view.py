@@ -1,3 +1,4 @@
+import jwt
 from app.views.poll_options_view import PollOptions
 from flask import request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -14,6 +15,7 @@ import ipdb
 
 
 class PollsVotes(Resource):
+    @jwt_required
     def get(self, poll_votes_id=None):
         if poll_votes_id is None:
             polls_votes = PollsVotesModel().query.all()
