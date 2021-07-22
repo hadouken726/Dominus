@@ -70,7 +70,7 @@ class InvitationsService:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='User is not host of the event!')
         if user_to_invite.id == self.current_user.id:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message="User can't invite himself")
-        if EventsInvitationsModel.query.filter(EventsInvitationsModel.event_id == event.id, EventsInvitationsModel.guest_id == user_to_invite.id):
+        if EventsInvitationsModel.query.filter(EventsInvitationsModel.event_id == event.id, EventsInvitationsModel.guest_id == user_to_invite.id).first():
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='Invitation already exists!')
         self.session.add(new_invite)
         self.session.commit()
