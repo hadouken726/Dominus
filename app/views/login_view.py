@@ -5,18 +5,9 @@ from app.models.users_model import UserSchema, UsersModel
 from flask_restful import Resource
 from flask_jwt_extended import create_access_token
 from app.services.login_service import LoginService
-# from ipdb import set_trace
-
-# from ipdb import set_trace
 
 
 class Login(Resource):
-
-    """
-    [X] Rota POST de autenticação
-    [ ] Rota POST protegida
-    """
-
     def post(self):
         request_data = request.get_json()
         login_service = LoginService()
