@@ -7,3 +7,4 @@ from app.views.votes_view import PollsVotes
 from app.views.events_view import Events
 from app.views.invitations_view import Invitations
 from app.views.homes_view import Homes
+from app.views.fees_view import Fees

@@ -95,3 +95,8 @@ def init_app(app: Flask):
         endpoint="/homes/<home_id>",
         methods=["GET", "DELETE", "PATCH"],
     )
+
+    from app.views import Fees
+
+    api.add_resource(Fees, "/fees", endpoint="/fees", methods=['GET', 'POST'])
+    api.add_resource(Fees, "/fees/<int:fee_id>", endpoint="/fees/<int:fee_id>", methods=['GET', 'PATCH', 'DELETE'])
