@@ -64,12 +64,14 @@ class InvitationsService:
             new_invite = EventInvitationSchema(exclude=['status']).load(request_data, session=self.session)
         except ValidationError as VE:
             abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
-        event = EventsModel.query.get_or_404(new_invite.id, description={'message': 'Event not found!'})
-        user_to_invite = UsersModel.query.get(new_invite.guest_id, description={'message': 'User not found!'})
+        event = EventsModel.query.get_or_404(new_invite.event_id, description={'message': 'Event not found!'})
+        user_to_invite = UsersModel.query.get_or_404(new_invite.guest_id, description={'message': 'User not found!'})
         if self.current_user.id != event.host_id:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='User is not host of the event!')
         if user_to_invite.id == self.current_user.id:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message="User can't invite himself")
+        if EventsInvitationsModel.query.filter(EventsInvitationsModel.event_id == event.id, EventsInvitationsModel.guest_id == user_to_invite.id):
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='Invitation already exists!')
         self.session.add(new_invite)
         self.session.commit()
         return EventInvitationSchema().dump(new_invite)
