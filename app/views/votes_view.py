@@ -41,7 +41,10 @@ class PollsVotes(Resource):
         current_user_id = get_jwt_identity()
         current_user = UsersModel().query.get_or_404(current_user_id, description='User not found!')
         poll_vote = PollVoteSchema().load(data, session=session)
-        if PollsVotesModel.query.filter(PollsVotesModel.owner_id == current_user_id, PollsVotesModel.option.poll_id == poll_vote.option.poll_id).first():
+        poll_id_from_option_choosen = poll_vote.option.poll_id
+        options_from_same_poll = list(PollOptionsModel.query.filter(poll_id=poll_vote.poll_id))
+
+        if PollsVotesModel.query.filter(PollsVotesModel.owner_id == current_user_id,  poll_vote.option in options_from_same_poll).first():
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='User already vote in this poll!')     
         session.add(poll_vote)
         session.commit()
