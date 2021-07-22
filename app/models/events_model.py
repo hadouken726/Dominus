@@ -27,3 +27,4 @@ class EventSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         update_fields = ('title', 'desc', 'start_at', 'end_at',)
     id = auto_field('id', dump_only=True)
+    host_id = auto_field('host_id', dump_only=True)
