@@ -1,3 +1,4 @@
+from app.models.homes_model import HomesModel
 from app.models.events_model import EventsModel
 from functools import partial
 from http import HTTPStatus
@@ -31,6 +32,10 @@ class UsersService:
             new_user = UserSchema().load(request_data, session=self.session)
         except ValidationError as VE:
             abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
+        if not HomesModel.query.filter_by(id=new_user.home_id).first():
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='Home does not exists!')
+        if UsersModel.query.filter(UsersModel.is_home_in_possession, UsersModel.home_id == new_user.home_id).first():
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='Home already has a representative!')
         pass_entry = new_user.password
         new_user.password = generate_password_hash(pass_entry)
         self.session.add(new_user)

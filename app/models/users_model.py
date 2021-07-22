@@ -27,5 +27,6 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         model = UsersModel
         load_instance = True
         ordered = True
+        include_fk= True
     id = auto_field('id', dump_only=True)
     password = auto_field('password', load_only=True)
