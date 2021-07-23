@@ -10,21 +10,15 @@ from app.models.users_model import UserSchema, UsersModel
 from app.models.events_invitations_model import EventsInvitationsModel, EventInvitationSchema 
 from marshmallow import ValidationError
 from werkzeug.security import generate_password_hash
+from app.services.base_service import BaseService
 
-
-class UsersService:
+class UsersService(BaseService):
 
     
-    def __init__(self, current_user_id) -> None:
-        fetched_user = UsersModel.query.get(current_user_id)
-        if fetched_user:
-            if fetched_user.is_admin:
-                self.current_user = fetched_user
-                self.session = current_app.db.session
-            else:
-                abort(HTTPStatus.UNAUTHORIZED, 'Only admin users can register new users!')
-        else:
-            abort(HTTPStatus.BAD_REQUEST, message='Invalid user!')
+    def __init__(self, current_user_id, current_app) -> None:
+        super().__init__(current_user_id, current_app)
+        if not self.current_user.is_admin:
+            abort(HTTPStatus.UNAUTHORIZED, message='Only admin users can register new users!')
     
 
     def post(self, request_data):
@@ -38,8 +32,7 @@ class UsersService:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='Home already has a representative!')
         pass_entry = new_user.password
         new_user.password = generate_password_hash(pass_entry)
-        self.session.add(new_user)
-        self.session.commit()
+        self.add_to_database(new_user)
         return UserSchema().dump(new_user), HTTPStatus.CREATED
 
     def get_all(self):
@@ -72,20 +65,18 @@ class UsersService:
         if self.current_user.id == user_to_patch.id:
             try:
                 updated_user = UserSchema(only=['password']).load(data_entry, instance=user_to_patch, session=self.session, partial=True)
-                updated_user.password = generate_password_hash(data_entry['password'])
-                self.session.add(updated_user)
-                self.session.commit()
-                return UserSchema().dump(updated_user), HTTPStatus.OK
             except ValidationError as VE:
-                abort(HTTPStatus.BAD_REQUEST, message=VE.messages)    
+                abort(HTTPStatus.BAD_REQUEST, message=VE.messages)   
+            updated_user.password = generate_password_hash(data_entry['password'])
+            self.add_to_database(updated_user)
+            return UserSchema().dump(updated_user), HTTPStatus.OK 
         if self.current_user.is_admin:
             try:
                 updated_user = UserSchema(exclude=['password']).load(data_entry, instance=user_to_patch, session=self.session, partial=True)
-                self.session.add(updated_user)
-                self.session.commit()
-                return UserSchema().dump(updated_user), HTTPStatus.OK
             except ValidationError as VE:
-                abort(HTTPStatus.BAD_REQUEST, message=VE.messages)   
+                abort(HTTPStatus.BAD_REQUEST, message=VE.messages) 
+            self.add_to_database(updated_user)
+            return UserSchema().dump(updated_user), HTTPStatus.OK  
         abort(HTTPStatus.UNAUTHORIZED, message='Edit allowed only for admin or own user!')
         
         

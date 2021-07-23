@@ -1,4 +1,3 @@
-import jwt
 from app.views.poll_options_view import PollOptions
 from flask import request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -11,11 +10,10 @@ from app.models.users_model import UsersModel
 from http import HTTPStatus
 from flask_restful import Resource, abort
 import sqlalchemy.exc as e
-import ipdb
 
 
 class PollsVotes(Resource):
-    @jwt_required
+    @jwt_required()
     def get(self, poll_votes_id=None):
         if poll_votes_id is None:
             polls_votes = PollsVotesModel().query.all()
@@ -43,12 +41,12 @@ class PollsVotes(Resource):
         data = request.get_json()
         current_user_id = get_jwt_identity()
         current_user = UsersModel().query.get_or_404(current_user_id, description='User not found!')
-        poll_vote = PollVoteSchema().load(data, session=session)
+        poll_vote = PollVoteSchema(exclude=['owner_id']).load(data, session=session)
+        poll_vote.owner_id = current_user.id
         option_chosen = PollOptionsModel.query.get_or_404(poll_vote.option_id, description='Option does not exists!')
         options_from_same_poll = list(PollOptionsModel.query.filter_by(poll_id=option_chosen.poll_id))
-
         if PollsVotesModel.query.filter_by(owner_id=current_user_id).first() and option_chosen in options_from_same_poll:
-            abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='User already vote in this poll!')     
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='User already vote in this poll!')   
         session.add(poll_vote)
         session.commit()
 

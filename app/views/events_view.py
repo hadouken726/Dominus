@@ -4,6 +4,7 @@ from flask_restful import Resource
 from app.services.events_service import EventsService
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import current_app
 
 class Events(Resource):
 
@@ -11,14 +12,14 @@ class Events(Resource):
     def post(self):
         current_user_id = get_jwt_identity()
         request_data = request.get_json()
-        events_service = EventsService(current_user_id)
+        events_service = EventsService(current_user_id, current_app)
         response = events_service.post(request_data)
         return response
 
     @jwt_required()
     def get(self, event_id=None):
         current_user_id = get_jwt_identity()
-        events_service = EventsService(current_user_id)
+        events_service = EventsService(current_user_id, current_app)
         if event_id is None:
             return events_service.get_all()
         return events_service.get(event_id)
@@ -26,7 +27,7 @@ class Events(Resource):
     @jwt_required()
     def patch(self, event_id):
         current_user_id = get_jwt_identity()
-        events_service = EventsService(current_user_id)
+        events_service = EventsService(current_user_id, current_app)
         request_data = request.get_json()
         response = events_service.patch(event_id, request_data)
         return response
@@ -34,7 +35,7 @@ class Events(Resource):
     @jwt_required()
     def delete(self, event_id):
         current_user_id = get_jwt_identity()
-        events_service = EventsService(current_user_id)
+        events_service = EventsService(current_user_id, current_app)
         response = events_service.delete(event_id)
         return response
     

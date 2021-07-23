@@ -12,26 +12,21 @@ from app.models.events_model import EventsModel, EventSchema
 from marshmallow import ValidationError, error_store
 from typing import List
 from marshmallow import Schema, fields
+import sqlalchemy.exc as e
+from app.services.base_service import BaseService
 
+class FeesService(BaseService):
 
-
-class FeesService:
-
-    
-    def __init__(self, current_user_id) -> None:
-        fetched_user = UsersModel.query.get_or_404(current_user_id)
-        self.current_user = fetched_user
-        self.session = current_app.db.session
-
+    def __init__(self, current_user_id, current_app) -> None:
+        super().__init__(current_user_id, current_app)
 
     def post(self, request_data):
         if self.current_user.is_admin:
             try:
                 fee_to_post = FeeSchema().load(request_data, session=self.session)
-                self.session.add(fee_to_post)
-                self.session.commit()
             except ValidationError as VE:
                 abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
+            self.add_to_database(fee_to_post)
             return FeeSchema().dump(fee_to_post), HTTPStatus.CREATED
         abort(HTTPStatus.UNAUTHORIZED, message='Access allowed only for admins!')
     
@@ -42,18 +37,16 @@ class FeesService:
         if self.current_user.is_admin:
             try:
                 fee_to_patch = FeeSchema(exclude=['home_id']).load(request_data, session=self.session, instance=fetched_fee, partial=True)
-                self.session.add(fee_to_patch)
-                self.session.commit()
             except ValidationError as VE:
                 abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
+            self.add_to_database(fee_to_patch)
             return FeeSchema().dump(fee_to_patch), HTTPStatus.CREATED
         abort(HTTPStatus.UNAUTHORIZED, message='Only admin can patch a fee!')
 
     def delete(self, fee_id):
         fee_to_delete = FeesModel.query.get_or_404(fee_id)
         if self.current_user.is_admin:
-            self.session.delete(fee_to_delete)
-            self.session.commit()
+            self.delete_from_database(fee_to_delete)
             return '', HTTPStatus.NO_CONTENT
         abort(HTTPStatus.UNAUTHORIZED, message='Only admin can delete a fee!')
 
