@@ -52,8 +52,7 @@ class EventsService(BaseService):
             else:
                 abort(HTTPStatus.UNAUTHORIZED, message='Only admin users can create important events!')
         else:
-            self.session.add(new_event)
-            self.session.commit()
+            self.add_to_database(new_event)
         return EventSchema().dump(new_event), HTTPStatus.CREATED
 
     def patch(self, event_id: int, request_data: dict):
@@ -62,8 +61,7 @@ class EventsService(BaseService):
             abort(HTTPStatus.NOT_FOUND, message='Event not found')
         if event.host_id == self.current_user.id or self.current_user.is_admin:
             updated_event = EventSchema().load(request_data, instance=event, partial=True, session=self.session)
-            self.session.add(updated_event)
-            self.session.commit()
+            self.add_to_database(updated_event)
             return EventSchema().dump(updated_event), HTTPStatus.OK
         else:
             abort(HTTPStatus.UNAUTHORIZED, message='Only event host or admin users can edit the event!')
@@ -73,8 +71,7 @@ class EventsService(BaseService):
         if not event_to_delete:
             abort(HTTPStatus.NOT_FOUND, message='Event not found')
         if self.current_user.is_admin or event_to_delete.host_id == self.current_user.id:
-            self.session.delete(event_to_delete)
-            self.session.commit()
+            self.delete_from_database(event_to_delete)
             return '', HTTPStatus.NO_CONTENT
         
         abort(HTTPStatus.UNAUTHORIZED, message='Only admin user or event host can delete this event')

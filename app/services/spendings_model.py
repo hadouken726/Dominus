@@ -26,10 +26,9 @@ class SpendingsService(BaseService):
         if self.current_user.is_admin:
             try:
                 spending_to_post = SpendingSchema().load(request_data, session=self.session)
-                self.session.add(spending_to_post)
-                self.session.commit()
             except ValidationError as VE:
                 abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
+            self.add_to_database(spending_to_post)
             return SpendingSchema().dump(spending_to_post), HTTPStatus.CREATED
         abort(HTTPStatus.UNAUTHORIZED, message='Only admins can post a spending!')
     
@@ -40,18 +39,16 @@ class SpendingsService(BaseService):
         if self.current_user.is_admin:
             try:
                 spending_to_patch = SpendingSchema().load(request_data, session=self.session, instance=fetched_spending, partial=True)
-                self.session.add(spending_to_patch)
-                self.session.commit()
             except ValidationError as VE:
                 abort(HTTPStatus.BAD_REQUEST, message=VE.messages)
+            self.add_to_database(spending_to_patch)
             return SpendingSchema().dump(spending_to_patch), HTTPStatus.CREATED
         abort(HTTPStatus.UNAUTHORIZED, message='Only admin can patch a spending!')
 
     def delete(self, spending_id):
         spending_to_delete = SpendingsModel.query.get_or_404(spending_id)
         if self.current_user.is_admin:
-            self.session.delete(spending_to_delete)
-            self.session.commit()
+            self.delete_from_database(spending_to_delete)
             return '', HTTPStatus.NO_CONTENT
         abort(HTTPStatus.UNAUTHORIZED, message='Only admin can delete a spending!')
 

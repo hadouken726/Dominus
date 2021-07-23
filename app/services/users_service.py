@@ -32,8 +32,7 @@ class UsersService(BaseService):
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message='Home already has a representative!')
         pass_entry = new_user.password
         new_user.password = generate_password_hash(pass_entry)
-        self.session.add(new_user)
-        self.session.commit()
+        self.add_to_database(new_user)
         return UserSchema().dump(new_user), HTTPStatus.CREATED
 
     def get_all(self):
@@ -66,20 +65,18 @@ class UsersService(BaseService):
         if self.current_user.id == user_to_patch.id:
             try:
                 updated_user = UserSchema(only=['password']).load(data_entry, instance=user_to_patch, session=self.session, partial=True)
-                updated_user.password = generate_password_hash(data_entry['password'])
-                self.session.add(updated_user)
-                self.session.commit()
-                return UserSchema().dump(updated_user), HTTPStatus.OK
             except ValidationError as VE:
-                abort(HTTPStatus.BAD_REQUEST, message=VE.messages)    
+                abort(HTTPStatus.BAD_REQUEST, message=VE.messages)   
+            updated_user.password = generate_password_hash(data_entry['password'])
+            self.add_to_database(updated_user)
+            return UserSchema().dump(updated_user), HTTPStatus.OK 
         if self.current_user.is_admin:
             try:
                 updated_user = UserSchema(exclude=['password']).load(data_entry, instance=user_to_patch, session=self.session, partial=True)
-                self.session.add(updated_user)
-                self.session.commit()
-                return UserSchema().dump(updated_user), HTTPStatus.OK
             except ValidationError as VE:
-                abort(HTTPStatus.BAD_REQUEST, message=VE.messages)   
+                abort(HTTPStatus.BAD_REQUEST, message=VE.messages) 
+            self.add_to_database(updated_user)
+            return UserSchema().dump(updated_user), HTTPStatus.OK  
         abort(HTTPStatus.UNAUTHORIZED, message='Edit allowed only for admin or own user!')
         
         

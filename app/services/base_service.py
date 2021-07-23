@@ -1,6 +1,7 @@
 from app.models.users_model import UsersModel
 from http import HTTPStatus
 import sqlalchemy.exc as e
+from flask_restful import abort
 
 
 
@@ -16,11 +17,11 @@ class BaseService:
             self.session.add(model)
             self.session.commit()
         except e.IntegrityError as ie:
-            return str(ie.__dict__['orig']), HTTPStatus.UNPROCESSABLE_ENTITY
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, message=str(ie.__dict__['orig'])) 
 
     def delete_from_database(self, model: object):
         try:
             self.session.delete(model)
             self.session.commit()
         except e.IntegrityError as ie:
-            return str(ie.__dict__['orig']), HTTPStatus.UNPROCESSABLE_ENTITY
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, message=str(ie.__dict__['orig']))
