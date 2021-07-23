@@ -12,17 +12,13 @@ from app.models.events_model import EventsModel, EventSchema
 from marshmallow import ValidationError, error_store
 from typing import List
 from marshmallow import Schema, fields
+import sqlalchemy.exc as e
+from app.services.base_service import BaseService
 
+class FeesService(BaseService):
 
-
-class FeesService:
-
-    
-    def __init__(self, current_user_id) -> None:
-        fetched_user = UsersModel.query.get_or_404(current_user_id)
-        self.current_user = fetched_user
-        self.session = current_app.db.session
-
+    def __init__(self, current_user_id, current_app) -> None:
+        super().__init__(current_user_id, current_app)
 
     def post(self, request_data):
         if self.current_user.is_admin:

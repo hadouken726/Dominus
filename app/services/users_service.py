@@ -10,21 +10,15 @@ from app.models.users_model import UserSchema, UsersModel
 from app.models.events_invitations_model import EventsInvitationsModel, EventInvitationSchema 
 from marshmallow import ValidationError
 from werkzeug.security import generate_password_hash
+from app.services.base_service import BaseService
 
-
-class UsersService:
+class UsersService(BaseService):
 
     
-    def __init__(self, current_user_id) -> None:
-        fetched_user = UsersModel.query.get(current_user_id)
-        if fetched_user:
-            if fetched_user.is_admin:
-                self.current_user = fetched_user
-                self.session = current_app.db.session
-            else:
-                abort(HTTPStatus.UNAUTHORIZED, 'Only admin users can register new users!')
-        else:
-            abort(HTTPStatus.BAD_REQUEST, message='Invalid user!')
+    def __init__(self, current_user_id, current_app) -> None:
+        super().__init__(current_user_id, current_app)
+        if not self.current_user.is_admin:
+            abort(HTTPStatus.UNAUTHORIZED, message='Only admin users can register new users!')
     
 
     def post(self, request_data):

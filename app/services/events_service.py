@@ -1,5 +1,4 @@
-from sqlalchemy.sql.expression import update
-from sqlalchemy.sql.functions import current_user
+import sqlalchemy.exc as e
 from app.models.events_invitations_model import EventInvitationSchema, EventsInvitationsModel
 from http import HTTPStatus
 from flask_jwt_extended import get_jwt_identity
@@ -7,33 +6,18 @@ from flask import current_app, request
 from flask_restful import abort
 from app.models.users_model import UsersModel
 from app.models.events_model import EventsModel, EventSchema
-from marshmallow import ValidationError, error_store
+from marshmallow import ValidationError
 from typing import List
 from marshmallow import Schema, fields
-
-
-class EventsParamsSchema(Schema):
-    is_important = fields.Boolean()
-    start_at = fields.DateTime()
-    pass
+from app.services.base_service import BaseService
 
 
 
-
-
-
-
-
-class EventsService:
+class EventsService(BaseService):
 
     
-    def __init__(self, current_user_id) -> None:
-        fetched_user = UsersModel.query.get(current_user_id)
-        if fetched_user:
-            self.current_user = fetched_user
-            self.session = current_app.db.session
-        else:
-            abort(HTTPStatus.BAD_REQUEST, message='Invalid user!')
+    def __init__(self, current_user_id, current_app) -> None:
+        super().__init__(current_user_id, current_app)
 
 
     def _deserialize(self, request_data: dict):

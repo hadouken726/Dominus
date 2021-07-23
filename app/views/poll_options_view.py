@@ -33,26 +33,25 @@ class PollOptions(Resource):
     def post(self):
         is_admin = get_jwt_identity()
         data = request.get_json()
-        try:
-            teste = data['poll_id']
-            if is_admin:
-                try:
-                    session = current_app.db.session
+        if is_admin:
+            try:
+                session = current_app.db.session
 
 
-                    new_poll_option = PollOptionSchema().load(data, session=session)
+                new_poll_option = PollOptionSchema().load(data, session=session)
+                if not new_poll_option.poll_id:
+                    return {'message':'poll_id is necessary!'}
 
-                    session.add(new_poll_option)
-                    session.commit()
+                session.add(new_poll_option)
+                session.commit()
 
-                    return PollOptionSchema().dump(new_poll_option)
+                return PollOptionSchema().dump(new_poll_option)
 
-                except ValidationError as VE:
-                    return VE.messages
-            if not is_admin:
-                return {"message": "user don't have admin permission to create a new poll option"}, HTTPStatus.UNAUTHORIZED
-        except:
-            return {'message':'poll_id is necessary!'}
+            except ValidationError as VE:
+                return VE.messages
+        if not is_admin:
+            return {"message": "user don't have admin permission to create a new poll option"}, HTTPStatus.UNAUTHORIZED
+            
             
 
     

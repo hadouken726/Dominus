@@ -10,18 +10,13 @@ from sqlalchemy.util.langhelpers import only_once
 from app.models.users_model import UsersModel
 from app.models.events_invitations_model import EventsInvitationsModel, EventInvitationSchema 
 from marshmallow import ValidationError
+from app.services.base_service import BaseService
 
-
-class InvitationsService:
+class InvitationsService(BaseService):
 
     
-    def __init__(self, current_user_id) -> None:
-        fetched_user = UsersModel.query.get(current_user_id)
-        if fetched_user:
-            self.current_user = fetched_user
-            self.session = current_app.db.session
-        else:
-            abort(HTTPStatus.BAD_REQUEST, message='Invalid user!')
+    def __init__(self, current_user_id, current_app) -> None:
+        super().__init__(current_user_id, current_app)
 
     def get_all(self):
         invitations_received = list(EventsInvitationsModel.query.filter_by(guest_id=self.current_user.id))
