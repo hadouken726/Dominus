@@ -42,6 +42,7 @@ class PollsVotes(Resource):
         current_user_id = get_jwt_identity()
         current_user = UsersModel().query.get_or_404(current_user_id, description='User not found!')
         poll_vote = PollVoteSchema(exclude=['owner_id']).load(data, session=session)
+        poll_vote.owner_id = current_user.id
         option_chosen = PollOptionsModel.query.get_or_404(poll_vote.option_id, description='Option does not exists!')
         options_from_same_poll = list(PollOptionsModel.query.filter_by(poll_id=option_chosen.poll_id))
         if PollsVotesModel.query.filter_by(owner_id=current_user_id).first() and option_chosen in options_from_same_poll:

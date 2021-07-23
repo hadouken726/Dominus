@@ -1,3 +1,4 @@
+from app.models.users_model import UsersModel
 from flask import request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
@@ -31,9 +32,10 @@ class PollOptions(Resource):
 
     @jwt_required()
     def post(self):
-        is_admin = get_jwt_identity()
+        current_user_id = get_jwt_identity()
+        current_user = UsersModel.query.get_or_404(current_user_id, description='Invalid user!')
         data = request.get_json()
-        if is_admin:
+        if current_user.is_admin:
             try:
                 session = current_app.db.session
 
@@ -49,16 +51,16 @@ class PollOptions(Resource):
 
             except ValidationError as VE:
                 return VE.messages
-        if not is_admin:
-            return {"message": "user don't have admin permission to create a new poll option"}, HTTPStatus.UNAUTHORIZED
+        return {"message": "user don't have admin permission to create a new poll option"}, HTTPStatus.UNAUTHORIZED
             
             
 
     
     @jwt_required()
     def delete(self, poll_option_id=None):
-        is_admin = get_jwt_identity()
-        if is_admin:
+        current_user_id = get_jwt_identity()
+        current_user = UsersModel.query.get_or_404(current_user_id, description='Invalid user!')
+        if current_user.is_admin:
             session = current_app.db.session
             poll_option = PollOptionsModel().query.get_or_404(poll_option_id)
             session.delete(poll_option)
@@ -68,21 +70,28 @@ class PollOptions(Resource):
                 "message": f"Poll option {poll_option.id} has been deleted"
             }
 
-        if not is_admin:
-            return {
+        
+        return {
                 "message": "user don't have admin permission to delete a poll option"
-            }, HTTPStatus.UNAUTHORIZED
+        }, HTTPStatus.UNAUTHORIZED
 
+    @jwt_required()
     def patch(self, poll_option_id=None):
-        try:
-            session = current_app.db.session
-            data = request.get_json()
-            poll_option = PollOptionsModel.query.get_or_404(poll_option_id)
-            new_poll_option = PollOptionSchema(only=["name"]).load(data ,partial=True, session=session, instance=poll_option)            
-            session.add(new_poll_option)
-            session.commit()
+        current_user_id = get_jwt_identity()
+        current_user = UsersModel.query.get_or_404(current_user_id, description='Invalid user!')
+        if current_user.is_admin:
+            try:
+                session = current_app.db.session
+                data = request.get_json()
+                poll_option = PollOptionsModel.query.get_or_404(poll_option_id)
+                new_poll_option = PollOptionSchema(only=["name"]).load(data ,partial=True, session=session, instance=poll_option)            
+                session.add(new_poll_option)
+                session.commit()
 
-            return PollOptionSchema().dump(new_poll_option)
+                return PollOptionSchema().dump(new_poll_option)
 
-        except ValidationError as VE:
-            return VE.messages
+            except ValidationError as VE:
+                return VE.messages
+        return {
+                "message": "user don't have admin permission to patch a poll option"
+        }, HTTPStatus.UNAUTHORIZED
